@@ -1,5 +1,7 @@
-// Earth's radius in kilometers
-const R = 6371;
+// Constants
+const R = 6371; // Earth's radius in kilometers
+const MAX_DISTANCE_FOR_SCORE = 2000; // km, distance beyond which score is 0
+const MAX_SCORE = 5000; // Maximum possible score for a perfect guess
 
 /**
  * Calculates the distance between two points on Earth using the Haversine formula.
@@ -29,14 +31,12 @@ export function calculateDistance(lat1, lon1, lat2, lon2) {
  * @returns {number} The score, from 0 to 5000.
  */
 export function calculateScore(distanceKm) {
-  const MAX_DISTANCE_FOR_SCORE = 2000; // km
-  const MAX_SCORE = 5000;
-
   if (distanceKm < 0.25) return MAX_SCORE; // Perfect guess bonus or close enough
   if (distanceKm > MAX_DISTANCE_FOR_SCORE) return 0;
 
   // Score decreases linearly from MAX_SCORE to 0 as distance increases
+  // Ensure score does not go below 0, though the condition above should prevent it.
   let score = MAX_SCORE * (1 - distanceKm / MAX_DISTANCE_FOR_SCORE);
 
-  return Math.round(Math.max(0, score));
+  return Math.round(Math.max(0, score)); // Ensure score is not negative and is rounded
 }

@@ -5,27 +5,32 @@ import './Map.css'; // We'll create this CSS file next
 export class MapContainer extends Component {
   constructor(props) {
     super(props);
+    // The apiKey constant is defined at the module level:
+    // const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
     this.state = {
-      // markers: [], // Player's guess marker is now controlled by props
-      apiKeyMissing: false,
+      apiKeyMissing: !apiKey, // Set true if apiKey is falsy (undefined, null, empty string)
     };
   }
 
-  componentDidMount() {
-    // Check if the Google Maps API script loaded, which might indicate API key issues
-    // google-maps-react loads the script itself. If window.google is not available soon after,
-    // it might be due to a missing or invalid API key.
-    // This is a heuristic check. The library might show its own errors/watermarks.
-    setTimeout(() => {
-      if (!window.google || !window.google.maps) {
-        console.error("Google Maps API not loaded. API key might be missing or invalid.");
-        this.setState({ apiKeyMissing: true });
-      }
-    }, 3000); // Wait a bit for the script to potentially load
-  }
+  // componentDidMount() {
+  //   // Check if the Google Maps API script loaded, which might indicate API key issues
+  //   // google-maps-react loads the script itself. If window.google is not available soon after,
+  //   // it might be due to a missing or invalid API key.
+  //   // This is a heuristic check. The library might show its own errors/watermarks.
+  //   setTimeout(() => {
+  //     if (!window.google || !window.google.maps) {
+  //       console.error("Google Maps API not loaded. API key might be missing or invalid.");
+  //       this.setState({ apiKeyMissing: true });
+  //     }
+  //   }, 3000); // Wait a bit for the script to potentially load
+  // }
 
   onMapClicked = (mapProps, map, clickEvent) => {
-    if (this.state.apiKeyMissing) return;
+    // It's good practice to also check if google API loaded successfully before interacting with map
+    // However, apiKeyMissing check already gatekeeps this. If key was missing, map shouldn't be interactive.
+    // If key IS present but API fails to load, google-maps-react might not render the map,
+    // or this.props.google might be undefined.
+    if (this.state.apiKeyMissing || !this.props.google || !this.props.loaded) return;
 
     // Call handleMapClick from props if gamePhase is 'guessing'
     if (this.props.gamePhase === 'guessing' && this.props.handleMapClick) {
@@ -113,17 +118,15 @@ export class MapContainer extends Component {
   }
 }
 
-// Replace 'YOUR_GOOGLE_MAPS_API_KEY' with an actual API key if available.
-// Since it's not, the map will likely show "For development purposes only" or an error.
-const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
+const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
 if (!apiKey) {
   console.warn("Google Maps API key is missing. Map functionality will be limited or unavailable.");
 }
 
 export default GoogleApiWrapper({
-  apiKey: apiKey,
+  apiKey: apiKey, // This should be just `apiKey` as it's defined in the module scope
   // Note: If no apiKey is provided, google-maps-react might still try to load the API
   // and Google will respond with an error or a watermarked map.
-  // The component includes a check for `window.google.maps` to display a more user-friendly message.
+  // The component's apiKeyMissing state now directly reflects if the key was initially provided.
 })(MapContainer);

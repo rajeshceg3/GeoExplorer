@@ -1,0 +1,7 @@
+[
+  { "name": "Eiffel Tower", "lat": 48.8584, "lng": 2.2945 },
+  { "name": "Statue of Liberty", "lat": 40.6892, "lng": -74.0445 },
+  { "name": "Sydney Opera House", "lat": -33.8568, "lng": 151.2153 },
+  { "name": "Taj Mahal", "lat": 27.1751, "lng": 78.0421 },
+  { "name": "Colosseum", "lat": 41.8902, "lng": 12.4922 }
+]

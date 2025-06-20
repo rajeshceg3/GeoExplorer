@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
-import StreetView from './components/StreetView';
+import StreetView from './components/StreetView'; // Ensure this is the default import
 import MapContainer from './components/Map'; // Import the Map component
 import { calculateDistance, calculateScore } from './utils/geometry';
 import GameOverScreen from './components/GameOverScreen';
 import RoundInfoDisplay from './components/RoundInfoDisplay';
+import gameLocationsData from './locations.json';
 
 // Define hardcoded locations
-const gameLocations = [
-  { lat: 48.8584, lng: 2.2945 },   // Eiffel Tower
-  { lat: 40.6892, lng: -74.0445 }, // Statue of Liberty
-  { lat: -33.8568, lng: 151.2153 },// Sydney Opera House
-  { lat: 27.1751, lng: 78.0421 },  // Taj Mahal
-  { lat: 41.8902, lng: 12.4922 }   // Colosseum
-];
+// const gameLocations = [
+//   { lat: 48.8584, lng: 2.2945 },   // Eiffel Tower
+//   { lat: 40.6892, lng: -74.0445 }, // Statue of Liberty
+//   { lat: -33.8568, lng: 151.2153 },// Sydney Opera House
+//   { lat: 27.1751, lng: 78.0421 },  // Taj Mahal
+//   { lat: 41.8902, lng: 12.4922 }   // Colosseum
+// ];
 
 function App() {
   // Initialize state variables
   const [currentRound, setCurrentRound] = useState(1);
   const [gamePhase, setGamePhase] = useState('guessing'); // 'guessing', 'round_summary', 'game_over'
-  const [locations, setLocations] = useState(gameLocations);
+  const [locations, setLocations] = useState(gameLocationsData);
   const [playerGuess, setPlayerGuess] = useState(null); // { lat: ..., lng: ... }
   const [actualLocation, setActualLocation] = useState(null); // { lat: ..., lng: ... } for the current round
   const [distance, setDistance] = useState(null);
@@ -85,7 +86,16 @@ function App() {
     setCurrentRound(1);
     setGamePhase('guessing');
     setPlayerGuess(null);
-    // setActualLocation(locations[0]); // Not strictly needed, useEffect will set it based on currentRound
+    // Explicitly set actualLocation to the first location for the new game.
+    // Ensure 'locations' state is guaranteed to be populated here.
+    // Given it's initialized with gameLocationsData and not changed, it should be safe.
+    if (locations && locations.length > 0) {
+      setActualLocation(locations[0]);
+    } else {
+      // Fallback or error if locations aren't loaded, though unlikely with current setup
+      setActualLocation(null);
+      console.error("handlePlayAgain: Locations array is empty or not loaded.");
+    }
     setDistance(null);
     setRoundScore(0);
     setTotalScore(0);
@@ -102,13 +112,13 @@ function App() {
         <>
           <div className="container">
             <div className="street-view-container">
-              <StreetView />
+              <StreetView actualLocation={actualLocation} />
             </div>
             <div className="map-container">
               <MapContainer
                 playerGuess={playerGuess}
                 actualLocation={actualLocation}
-                handleMapClick={gamePhase === 'guessing' ? handleMapClick : () => {}} // Disable map click if not in guessing phase
+                handleMapClick={handleMapClick} // Simplified: Map component now handles phase check internally
                 gamePhase={gamePhase}
               />
             </div>
