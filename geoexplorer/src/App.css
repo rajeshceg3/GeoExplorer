@@ -1,0 +1,65 @@
+/* General App styling */
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Header styling */
+.App-header {
+  background-color: #282c34; /* Dark grey */
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2em;
+}
+
+/* Container for layout sections */
+.container {
+  display: flex; /* Arrange children (street view and map) in a row */
+  flex-wrap: wrap; /* Allow wrapping if screen is too small */
+  justify-content: space-around; /* Distribute space around items */
+  padding: 20px;
+}
+
+/* Street View container styling */
+.street-view-container {
+  border: 2px solid #4CAF50; /* Green border */
+  padding: 15px;
+  margin: 10px;
+  background-color: #f0f0f0; /* Light grey background */
+  min-height: 450px; /* Increased minimum height */
+  flex: 1; /* Allow flex grow/shrink */
+  min-width: 300px; /* Minimum width before wrapping */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+/* Map container styling */
+.map-container {
+  border: 2px solid #2196F3; /* Blue border */
+  padding: 15px;
+  margin: 10px;
+  background-color: #e8e8e8; /* Slightly different light grey background */
+  min-height: 450px; /* Increased minimum height */
+  flex: 1; /* Allow flex grow/shrink */
+  min-width: 300px; /* Minimum width before wrapping */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+    align-items: center; /* Center items when stacked */
+  }
+
+  .street-view-container,
+  .map-container {
+    width: 90%; /* Take more width on smaller screens */
+    min-width: unset; /* Remove min-width constraint */
+    margin-bottom: 20px; /* Add space between stacked items */
+  }
+}
