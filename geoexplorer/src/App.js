@@ -112,7 +112,8 @@ function App() {
 
       {(gamePhase === 'guessing' || gamePhase === 'round_summary') && (
         <>
-          <div className="container">
+          {/* Apply fade-in to the main game area when it appears */}
+          <div className="container fade-in-section">
             <div className="street-view-container">
               <StreetView actualLocation={actualLocation} />
             </div>
@@ -129,18 +130,20 @@ function App() {
             <button
               onClick={handleMakeGuess}
               disabled={!playerGuess} // Button enabled once a guess is made on the map
+              className="primary-action-button" // Added class
             >
               Make Guess
             </button>
           )}
           {gamePhase === 'round_summary' && (
-            <div className="round-summary-container"> {/* Changed class for clarity if needed */}
+            // Apply fade-in to the round summary section when it appears
+            <div className="round-summary-container fade-in-section">
               <RoundInfoDisplay
                 distance={distance}
                 roundScore={roundScore}
                 totalScore={totalScore}
               />
-              <button onClick={handleNextRound}>
+              <button onClick={handleNextRound} className="primary-action-button"> {/* Added class */}
                 {currentRound < locations.length ? 'Next Round' : 'Show Final Score'}
               </button>
             </div>

@@ -3,9 +3,9 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid #004D40; /* Darker shade of primary for border */
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: #FFF8E1; /* Lighter tint of secondary color */
   max-width: 300px;
   margin: 20px auto;
 }
@@ -27,7 +27,7 @@
 .userName {
   margin-bottom: 15px;
   font-size: 1.1em;
-  color: #333;
+  color: #004D40; /* Darker shade of primary for text */
 }
 
 .signInButton,
@@ -50,10 +50,10 @@
 }
 
 .signOutButton {
-  background-color: #db4437;
-  color: white;
+  background-color: #FF6F00; /* New accent color */
+  color: white; /* White text */
 }
 
 .signOutButton:hover {
-  background-color: #c23321;
+  background-color: #E65100; /* Darker shade of accent color for hover */
 }

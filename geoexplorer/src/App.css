@@ -1,13 +1,14 @@
 /* General App styling */
 .App {
   text-align: center;
-  font-family: Arial, sans-serif;
+  font-family: 'Open Sans', Arial, sans-serif; /* Updated font family */
+  color: #333333; /* Updated text color for readability */
 }
 
 /* Header styling */
 .App-header {
-  background-color: #282c34; /* Dark grey */
-  padding: 10px 20px; /* Adjusted padding */
+  background-color: #00796B; /* New primary color */
+  padding: 15px 30px; /* Updated padding for a more balanced look */
   color: white;
   /* text-align: center; */ /* Replaced by flex properties */
   display: flex;
@@ -15,11 +16,13 @@
   align-items: center;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added subtle shadow for lift */
 }
 
 .App-header h1 {
   margin: 0;
-  font-size: 2em;
+  font-size: 2.2em; /* Adjusted font size */
+  font-family: 'Montserrat', sans-serif; /* Updated font family */
 }
 
 /* Container for layout sections */
@@ -28,14 +31,15 @@
   flex-wrap: wrap; /* Allow wrapping if screen is too small */
   justify-content: space-around; /* Distribute space around items */
   padding: 20px;
+  gap: 20px; /* Added gap for better spacing */
 }
 
 /* Street View container styling */
 .street-view-container {
-  border: 2px solid #4CAF50; /* Green border */
+  border: 2px solid #004D40; /* Darker shade of primary color */
   padding: 15px;
   margin: 10px;
-  background-color: #f0f0f0; /* Light grey background */
+  background-color: #FFF8E1; /* Lighter tint of secondary color #FFDAB9 */
   min-height: 450px; /* Increased minimum height */
   flex: 1; /* Allow flex grow/shrink */
   min-width: 300px; /* Minimum width before wrapping */
@@ -44,10 +48,10 @@
 
 /* Map container styling */
 .map-container {
-  border: 2px solid #2196F3; /* Blue border */
+  border: 2px solid #004D40; /* Darker shade of primary color */
   padding: 15px;
   margin: 10px;
-  background-color: #e8e8e8; /* Slightly different light grey background */
+  background-color: #FFF8E1; /* Lighter tint of secondary color #FFDAB9 */
   min-height: 450px; /* Increased minimum height */
   flex: 1; /* Allow flex grow/shrink */
   min-width: 300px; /* Minimum width before wrapping */
@@ -67,4 +71,97 @@
     min-width: unset; /* Remove min-width constraint */
     margin-bottom: 20px; /* Add space between stacked items */
   }
+}
+
+/* Primary action button styling */
+.primary-action-button {
+  background-color: #FF6F00; /* Accent color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 10px; /* Added margin for spacing */
+}
+
+.primary-action-button:hover,
+.primary-action-button:focus {
+  background-color: #E65100; /* Darker accent color for hover/focus */
+  outline: none;
+}
+
+.primary-action-button:disabled,
+.primary-action-button[disabled] { /* Covering both attribute forms */
+  background-color: #FFB74D; /* Lighter shade of accent color */
+  color: #FFFFFF; /* Keep text white for contrast on lighter orange */
+  opacity: 0.7; /* Slightly more opaque than typical 0.6 for better visibility on orange */
+  cursor: not-allowed;
+}
+
+/* RoundInfoDisplay value styling */
+.info-value {
+  font-weight: bold;
+  color: #00796B; /* Primary color */
+}
+
+.score-value {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #FF6F00; /* Accent color */
+}
+
+.total-score-value {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #004D40; /* Darker primary color */
+}
+
+/* GameOverScreen styling */
+.game-summary {
+  padding: 20px;
+  text-align: center;
+}
+
+.game-summary h2 {
+  font-size: 2.5em;
+  color: #00796B; /* Primary color */
+  margin-bottom: 15px;
+}
+
+.game-summary .final-score { /* Class to be added to the final score paragraph */
+  font-size: 1.8em;
+  color: #FF6F00; /* Accent color */
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.game-summary h3 {
+  font-size: 1.5em;
+  color: #00796B; /* Primary color */
+  margin-bottom: 10px;
+}
+
+.game-summary .round-score-item { /* Class to be added to individual round score paragraphs */
+  font-size: 1.1em;
+  color: #333333; /* Default text color */
+  margin-bottom: 5px;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px); /* Subtle upward movement */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-section {
+  animation: fadeIn 0.5s ease-out forwards;
 }
