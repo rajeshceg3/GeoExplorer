@@ -7,9 +7,14 @@
 /* Header styling */
 .App-header {
   background-color: #282c34; /* Dark grey */
-  padding: 20px;
+  padding: 10px 20px; /* Adjusted padding */
   color: white;
-  text-align: center;
+  /* text-align: center; */ /* Replaced by flex properties */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .App-header h1 {

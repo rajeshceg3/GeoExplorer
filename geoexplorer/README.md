@@ -68,3 +68,35 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Google Sign-In Setup
+
+To enable Google Sign-In functionality for development or deployment, you need to obtain a Google Client ID.
+
+1.  **Obtain a Google Client ID**:
+    *   Go to the [Google Cloud Console](https://console.cloud.google.com/).
+    *   Create a new project or select an existing one.
+    *   Navigate to "APIs & Services" > "Credentials".
+    *   Click on "Create Credentials" and select "OAuth client ID".
+    *   Choose "Web application" as the application type.
+    *   Configure the authorized JavaScript origins and redirect URIs. For local development, you might use:
+        *   Authorized JavaScript origins: `http://localhost:3000`
+        *   Authorized redirect URIs: `http://localhost:3000`
+    *   After creation, your Client ID will be displayed.
+
+2.  **Update the Application**:
+    *   Open the file `geoexplorer/src/App.js`.
+    *   Find the line where the `SignIn` component is rendered:
+        ```javascript
+        <SignIn googleClientId="YOUR_GOOGLE_CLIENT_ID_HERE" />
+        ```
+    *   Replace `YOUR_GOOGLE_CLIENT_ID_HERE` with the actual Client ID you obtained from the Google Cloud Console.
+
+### Note on Installing `google-auth-library`
+
+When installing the `google-auth-library` package via npm, you might encounter peer dependency conflicts, particularly with `react`. If this occurs, you can use the `--legacy-peer-deps` flag as a workaround:
+
+```bash
+npm install google-auth-library --legacy-peer-deps
+```
+This should help resolve the conflicts and allow the installation to proceed.

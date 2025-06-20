@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import SignIn from './components/SignIn';
 import StreetView from './components/StreetView'; // Ensure this is the default import
 import MapContainer from './components/Map'; // Import the Map component
 import { calculateDistance, calculateScore } from './utils/geometry';
@@ -106,6 +107,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>GeoExplorer</h1>
+        <SignIn googleClientId="YOUR_GOOGLE_CLIENT_ID_HERE" />
       </header>
 
       {(gamePhase === 'guessing' || gamePhase === 'round_summary') && (
