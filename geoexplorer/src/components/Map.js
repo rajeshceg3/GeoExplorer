@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
+import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
 import './Map.css'; // We'll create this CSS file next
 
 export class MapContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      markers: [],
+      // markers: [], // Player's guess marker is now controlled by props
       apiKeyMissing: false,
     };
   }
@@ -25,16 +25,18 @@ export class MapContainer extends Component {
   }
 
   onMapClicked = (mapProps, map, clickEvent) => {
-    if (this.state.apiKeyMissing) return; // Don't add markers if API key is missing
+    if (this.state.apiKeyMissing) return;
 
-    const { latLng } = clickEvent;
-    const newMarker = {
-      lat: latLng.lat(),
-      lng: latLng.lng(),
-    };
-    this.setState(prevState => ({
-      markers: [...prevState.markers, newMarker],
-    }));
+    // Call handleMapClick from props if gamePhase is 'guessing'
+    if (this.props.gamePhase === 'guessing' && this.props.handleMapClick) {
+      const { latLng } = clickEvent;
+      this.props.handleMapClick({
+        lat: latLng.lat(),
+        lng: latLng.lng(),
+      });
+    }
+    // The logic to set local marker state is removed.
+    // Player's guess is now managed by App.js and passed via playerGuess prop.
   };
 
   render() {
@@ -69,16 +71,41 @@ export class MapContainer extends Component {
           containerStyle={{ position: 'relative', width: '100%', height: '100%' }}
           className="interactive-map"
         >
-          {this.state.markers.map((marker, index) => (
+          {/* Display player's guess marker from props */}
+          {this.props.playerGuess && (
             <Marker
-              key={index}
-              position={{ lat: marker.lat, lng: marker.lng }}
-              name={`Pinned Location ${index + 1}`}
+              position={{ lat: this.props.playerGuess.lat, lng: this.props.playerGuess.lng }}
+              name="Your Guess"
             />
-          ))}
+          )}
+          {/* Display actual location marker during round summary */}
+          {this.props.gamePhase === 'round_summary' && this.props.actualLocation && (
+            <Marker
+              position={this.props.actualLocation}
+              name={'Actual Location'}
+              icon={{
+                url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+              }}
+            />
+          )}
+          {/* Draw Polyline between guess and actual location during round summary */}
+          {this.props.gamePhase === 'round_summary' &&
+            this.props.playerGuess &&
+            this.props.actualLocation && (
+              <Polyline
+                path={[this.props.playerGuess, this.props.actualLocation]}
+                options={{
+                  strokeColor: '#FF0000',
+                  strokeOpacity: 0.8,
+                  strokeWeight: 2,
+                }}
+              />
+            )}
         </Map>
         <div className="map-instructions">
-          <p>Click on the map to place a pin.</p>
+          {this.props.gamePhase === 'guessing' && <p>Click on the map to place your guess.</p>}
+          {this.props.gamePhase === 'round_summary' && <p>Check your guess against the actual location!</p>}
+          {this.props.gamePhase === 'game_over' && <p>Game Over! Thanks for playing.</p>}
           {this.props.google && !this.props.google.maps ? <p><small>(Map functionality may be limited without a valid API key)</small></p> : null}
         </div>
       </div>
