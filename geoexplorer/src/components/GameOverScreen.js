@@ -3,14 +3,14 @@ import React from 'react';
 
 const GameOverScreen = ({ totalScore, roundScores, onPlayAgain }) => {
   return (
-    <div className="game-summary"> {/* Optional: Add a class for styling from App.css or a new CSS file */}
+    <div className="game-summary fade-in-section"> {/* Styles for .game-summary and its children are in App.css */}
       <h2>Game Over!</h2>
-      <p>Your final score: {totalScore}</p>
+      <p className="final-score">Your final score: {totalScore}</p>
       <h3>Round Scores:</h3>
       {roundScores.map((score, index) => (
-        <p key={index}>Round {index + 1}: {score} points</p>
+        <p key={index} className="round-score-item">Round {index + 1}: {score} points</p>
       ))}
-      <button onClick={onPlayAgain}>Play Again</button>
+      <button onClick={onPlayAgain} className="primary-action-button">Play Again</button>
     </div>
   );
 };

@@ -100,7 +100,7 @@ export class MapContainer extends Component {
               <Polyline
                 path={[this.props.playerGuess, this.props.actualLocation]}
                 options={{
-                  strokeColor: '#FF0000',
+                  strokeColor: '#FF6F00', // Updated to accent color
                   strokeOpacity: 0.8,
                   strokeWeight: 2,
                 }}

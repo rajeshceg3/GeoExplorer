@@ -16,14 +16,14 @@
   align-items: center;
   height: 100%;
   padding: 20px;
-  background-color: #f8d7da; /* Light red for error background */
-  color: #721c24; /* Dark red for error text */
-  border: 1px solid #f5c6cb; /* Reddish border */
+  background-color: #FFE0B2; /* Light orange - accent color shade */
+  color: #333333; /* Dark text for readability */
+  border: 1px solid #FFCC80; /* Orange accent border */
   text-align: center;
 }
 
 .map-api-key-missing-error h2 {
-  color: #721c24;
+  color: #333333; /* Dark text for readability */
   margin-bottom: 15px;
 }
 
@@ -31,7 +31,8 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 121, 107, 0.7); /* Semi-transparent primary color */
+  color: #FFFFFF; /* White text for readability */
   padding: 8px 12px;
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
