@@ -1,0 +1,38 @@
+.street-view-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #ddd; /* Light grey background for the wrapper */
+  position: relative; /* For positioning info text */
+}
+
+.street-view-image {
+  max-width: 100%;
+  max-height: calc(100% - 40px); /* Adjust based on info text height */
+  object-fit: contain; /* Ensure entire SVG is visible, maintain aspect ratio */
+  border: 1px solid #ccc;
+}
+
+.street-view-info {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  text-align: left;
+}
+
+.street-view-info p {
+  margin: 0 0 3px 0;
+  font-weight: bold;
+}
+
+.street-view-info small {
+  font-size: 0.8em;
+}
