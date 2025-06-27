@@ -1,46 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { jwtDecode } from "jwt-decode";
+import React, { useEffect } from 'react';
+// Removed useState and jwtDecode as they are no longer used here
 import './SignIn.css';
 
-const SignIn = () => {
-  // TODO: Replace YOUR_GOOGLE_CLIENT_ID with an environment variable
+const SignIn = ({
+  isSignedIn,
+  userName,
+  profilePicUrl,
+  handleSignOut,
+  handleCredentialResponse, // Received from App.js
+  // googleClientId is passed from App.js but used in the effect hook
+}) => {
+  // Effect to render the Google Sign-In button
   useEffect(() => {
     /* global google */
-    google.accounts.id.initialize({
-      client_id: "YOUR_GOOGLE_CLIENT_ID",
-      callback: handleCredentialResponse,
-    });
-    google.accounts.id.renderButton(
-      document.getElementById("googleSignInButton"),
-      { theme: "outline", size: "large" }
-    );
-  }, []);
-
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [profilePicUrl, setProfilePicUrl] = useState('');
-
-  const handleCredentialResponse = (response) => {
-    console.log("Encoded JWT ID token: " + response.credential);
-    const decoded = jwtDecode(response.credential);
-    console.log(decoded);
-    setUserName(decoded.name);
-    setProfilePicUrl(decoded.picture);
-    setIsSignedIn(true);
-  };
-
-  const handleSignOut = () => {
-    /* global google */
-    google.accounts.id.disableAutoSelect();
-    setIsSignedIn(false);
-    setUserName('');
-    setProfilePicUrl('');
-    // Ensure the button is re-rendered if it was hidden or changed
-    // This might require re-running the effect that renders the button,
-    // or ensuring the div is simply made visible again.
-    // The current logic with `style={{ display: isSignedIn ? 'none' : 'block' }}`
-    // for the button div should handle showing it again when isSignedIn becomes false.
-  };
+    // Initialization is now done in App.js
+    // We only need to render the button here if it's not already rendered by App.js's logic
+    // or if we want to ensure it uses the SignIn component's div.
+    // The `handleCredentialResponse` is passed from App.js.
+    if (!isSignedIn) { // Only render the button if the user is not signed in
+      google.accounts.id.renderButton(
+        document.getElementById("signInDiv"), // Ensure this div ID is consistent or passed as a prop
+        { theme: "outline", size: "large" }
+      );
+    }
+  }, [isSignedIn, handleCredentialResponse]); // Rerun if isSignedIn changes, to potentially hide/show button
 
   return (
     <div className="signInContainer">
@@ -53,7 +36,9 @@ const SignIn = () => {
           </button>
         </div>
       ) : (
-        <div id="googleSignInButton" style={{ display: isSignedIn ? 'none' : 'block' }}></div>
+        // This div is where the Google Sign-In button will be rendered.
+        // Its visibility is controlled by App.js logic that hides/shows this based on isSignedIn state.
+        <div id="signInDiv"></div>
       )}
     </div>
   );

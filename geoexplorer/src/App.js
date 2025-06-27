@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import jwt_decode from "jwt-decode";
 import './App.css';
 import SignIn from './components/SignIn';
 import StreetView from './components/StreetView'; // Ensure this is the default import
@@ -6,19 +7,28 @@ import MapContainer from './components/Map'; // Import the Map component
 import { calculateDistance, calculateScore } from './utils/geometry';
 import GameOverScreen from './components/GameOverScreen';
 import RoundInfoDisplay from './components/RoundInfoDisplay';
+import UserProfile from './components/UserProfile'; // Import UserProfile
 import gameLocationsData from './locations.json';
 
 // Define hardcoded locations
 // const gameLocations = [
-//   { lat: 48.8584, lng: 2.2945 },   // Eiffel Tower
+//   { lat: 48.8584, lng: 2.2945 }, // Eiffel Tower
 //   { lat: 40.6892, lng: -74.0445 }, // Statue of Liberty
-//   { lat: -33.8568, lng: 151.2153 },// Sydney Opera House
-//   { lat: 27.1751, lng: 78.0421 },  // Taj Mahal
-//   { lat: 41.8902, lng: 12.4922 }   // Colosseum
+//   { lat: -33.8568, lng: 151.2153 }, // Sydney Opera House
+//   { lat: 27.1751, lng: 78.0421 }, // Taj Mahal
+//   { lat: 41.8902, lng: 12.4922 } // Colosseum
 // ];
 
 function App() {
-  // Initialize state variables
+  // Initialize state variables for user authentication
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [profilePicUrl, setProfilePicUrl] = useState('');
+
+  // State to manage current view ('game' or 'profile')
+  const [currentView, setCurrentView] = useState('game');
+
+  // Initialize state variables for game logic
   const [currentRound, setCurrentRound] = useState(1);
   const [gamePhase, setGamePhase] = useState('guessing'); // 'guessing', 'round_summary', 'game_over'
   const [locations, setLocations] = useState(gameLocationsData);
@@ -28,6 +38,52 @@ function App() {
   const [roundScore, setRoundScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [roundScores, setRoundScores] = useState([]); // Array to store scores of each round
+
+  // State for user's lifetime statistics (session-based)
+  const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
+  const [userHighestScore, setUserHighestScore] = useState(0);
+
+  // Navigation functions
+  const navigateToGame = () => setCurrentView('game');
+  const navigateToProfile = () => setCurrentView('profile');
+
+  // Google Sign-In initialization and user state handling
+  useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id: "YOUR_GOOGLE_CLIENT_ID", // Replace with your actual client ID
+      callback: handleCredentialResponse,
+    });
+  }, []);
+
+  // Handle credential response from Google Sign-In
+  const handleCredentialResponse = (response) => {
+    console.log("Encoded JWT ID token: " + response.credential);
+    var decodedToken = jwt_decode(response.credential);
+    setIsSignedIn(true);
+    setUserName(decodedToken.name);
+    setProfilePicUrl(decodedToken.picture);
+    // Hide the sign-in button after successful sign-in
+    const signInButton = document.getElementById("signInDiv");
+    if (signInButton) {
+      signInButton.hidden = true;
+    }
+  };
+
+  // Handle sign-out
+  const handleSignOut = (event) => {
+    setIsSignedIn(false);
+    setUserName('');
+    setProfilePicUrl('');
+    setCurrentView('game'); // Return to game view on sign out
+    setTotalGamesPlayed(0); // Reset lifetime stats
+    setUserHighestScore(0); // Reset lifetime stats
+    // Show the sign-in button again
+    const signInButton = document.getElementById("signInDiv");
+    if (signInButton) {
+      signInButton.hidden = false;
+    }
+  };
 
   // Load round data effect
   useEffect(() => {
@@ -79,6 +135,11 @@ function App() {
       // actualLocation will be updated by the useEffect hook watching currentRound
     } else {
       setGamePhase('game_over');
+      // Update lifetime stats when a game finishes
+      setTotalGamesPlayed(prevGamesPlayed => prevGamesPlayed + 1);
+      if (totalScore > userHighestScore) {
+        setUserHighestScore(totalScore);
+      }
     }
   };
 
@@ -101,61 +162,86 @@ function App() {
     setRoundScore(0);
     setTotalScore(0);
     setRoundScores([]);
+    setCurrentView('game'); // Ensure game view is active when playing again
   };
 
   return (
     <div className="App">
       <header className="App-header">
         <h1>GeoExplorer</h1>
-        <SignIn googleClientId="YOUR_GOOGLE_CLIENT_ID_HERE" />
-      </header>
-
-      {(gamePhase === 'guessing' || gamePhase === 'round_summary') && (
-        <>
-          {/* Apply fade-in to the main game area when it appears */}
-          <div className="container fade-in-section">
-            <div className="street-view-container">
-              <StreetView actualLocation={actualLocation} />
-            </div>
-            <div className="map-container">
-              <MapContainer
-                playerGuess={playerGuess}
-                actualLocation={actualLocation}
-                handleMapClick={handleMapClick} // Simplified: Map component now handles phase check internally
-                gamePhase={gamePhase}
-              />
-            </div>
-          </div>
-          {gamePhase === 'guessing' && (
-            <button
-              onClick={handleMakeGuess}
-              disabled={!playerGuess} // Button enabled once a guess is made on the map
-              className="primary-action-button" // Added class
-            >
-              Make Guess
+        <div className="header-controls">
+          {isSignedIn && currentView === 'game' && (
+            <button onClick={navigateToProfile} className="profile-button">
+              View Profile
             </button>
           )}
-          {gamePhase === 'round_summary' && (
-            // Apply fade-in to the round summary section when it appears
-            <div className="round-summary-container fade-in-section">
-              <RoundInfoDisplay
-                distance={distance}
-                roundScore={roundScore}
-                totalScore={totalScore}
-              />
-              <button onClick={handleNextRound} className="primary-action-button"> {/* Added class */}
-                {currentRound < locations.length ? 'Next Round' : 'Show Final Score'}
-              </button>
-            </div>
+          <SignIn
+            isSignedIn={isSignedIn}
+            userName={userName}
+            profilePicUrl={profilePicUrl}
+            handleSignOut={handleSignOut}
+            handleCredentialResponse={handleCredentialResponse}
+            googleClientId="YOUR_GOOGLE_CLIENT_ID"
+          />
+        </div>
+      </header>
+
+      {currentView === 'game' ? (
+        <>
+          {(gamePhase === 'guessing' || gamePhase === 'round_summary') && (
+            <>
+              <div className="container fade-in-section">
+                <div className="street-view-container">
+                  <StreetView actualLocation={actualLocation} />
+                </div>
+                <div className="map-container">
+                  <MapContainer
+                    playerGuess={playerGuess}
+                    actualLocation={actualLocation}
+                    handleMapClick={handleMapClick}
+                    gamePhase={gamePhase}
+                  />
+                </div>
+              </div>
+              {gamePhase === 'guessing' && (
+                <button
+                  onClick={handleMakeGuess}
+                  disabled={!playerGuess}
+                  className="primary-action-button"
+                >
+                  Make Guess
+                </button>
+              )}
+              {gamePhase === 'round_summary' && (
+                <div className="round-summary-container fade-in-section">
+                  <RoundInfoDisplay
+                    distance={distance}
+                    roundScore={roundScore}
+                    totalScore={totalScore}
+                  />
+                  <button onClick={handleNextRound} className="primary-action-button">
+                    {currentRound < locations.length ? 'Next Round' : 'Show Final Score'}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {gamePhase === 'game_over' && (
+            <GameOverScreen
+              totalScore={totalScore}
+              roundScores={roundScores}
+              onPlayAgain={handlePlayAgain}
+            />
           )}
         </>
-      )}
-
-      {gamePhase === 'game_over' && (
-        <GameOverScreen
-          totalScore={totalScore}
-          roundScores={roundScores}
-          onPlayAgain={handlePlayAgain}
+      ) : (
+        <UserProfile
+          userName={userName}
+          profilePicUrl={profilePicUrl}
+          totalGamesPlayed={totalGamesPlayed}
+          highestScore={userHighestScore}
+          onNavigateBack={navigateToGame}
         />
       )}
     </div>
