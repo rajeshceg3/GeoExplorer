@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { GoogleApiWrapper } from 'google-maps-react';
+import LoadingSpinner from './LoadingSpinner';
 import './StreetView.css';
 
 const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
@@ -11,6 +12,7 @@ export class StreetView extends Component {
     this.state = {
       panorama: null,
       serviceStatus: null, // To store status from StreetViewService
+      isLoading: false, // Track loading state
     };
   }
 
@@ -50,35 +52,47 @@ export class StreetView extends Component {
     const { google, actualLocation } = this.props;
 
     if (!apiKey) {
-        this.setState({ serviceStatus: 'API_KEY_MISSING' });
+        this.setState({ serviceStatus: 'API_KEY_MISSING', isLoading: false });
         return;
     }
 
     if (!google || !google.maps) {
-      this.setState({ serviceStatus: 'GOOGLE_API_NOT_LOADED' });
+      this.setState({ serviceStatus: 'GOOGLE_API_NOT_LOADED', isLoading: false });
       return;
     }
 
     if (!actualLocation || !this.streetViewRef.current) {
       // If actualLocation is null or ref is not available, do nothing.
       // This can happen if props are not ready yet.
-      if (!actualLocation) this.setState({ serviceStatus: 'LOCATION_MISSING' });
+      if (!actualLocation) this.setState({ serviceStatus: 'LOCATION_MISSING', isLoading: false });
       return;
     }
+
+    // Set loading state when starting to load panorama
+    this.setState({ isLoading: true, serviceStatus: null });
 
     const streetViewService = new google.maps.StreetViewService();
     const locationLatLng = new google.maps.LatLng(actualLocation.lat, actualLocation.lng);
 
     streetViewService.getPanorama(
-      { location: locationLatLng, radius: 50, source: google.maps.StreetViewSource.OUTDOOR },
+      { 
+        location: locationLatLng, 
+        radius: 100, // Increased radius for better coverage
+        source: google.maps.StreetViewSource.OUTDOOR 
+      },
       (data, status) => {
+        this.setState({ isLoading: false });
+        
         if (status === google.maps.StreetViewStatus.OK) {
-          this.setState({ serviceStatus: 'OK', panorama: true }); // panorama state to true just to indicate it's loaded
+          this.setState({ serviceStatus: 'OK', panorama: true });
           const panorama = new google.maps.StreetViewPanorama(
             this.streetViewRef.current,
             {
               position: data.location.latLng,
-              pov: { heading: 34, pitch: 10 },
+              pov: { 
+                heading: Math.random() * 360, // Random initial heading for variety
+                pitch: 0 // Level view
+              },
               zoom: 1,
               addressControl: false,
               linksControl: false,
@@ -87,9 +101,9 @@ export class StreetView extends Component {
               fullscreenControl: false,
               motionTracking: false,
               motionTrackingControl: false,
+              showRoadLabels: false, // Hide road labels to make it more challenging
             }
           );
-          // panorama.setVisible(true); // Not strictly needed, it's visible by default
         } else {
           console.error('Street View service failed for location:', actualLocation, 'Status:', status);
           this.setState({ serviceStatus: status, panorama: false });
@@ -102,57 +116,71 @@ export class StreetView extends Component {
     const placeholderImageUrl = process.env.PUBLIC_URL + '/street_view_placeholder.svg';
     let content;
 
-    if (this.state.serviceStatus === 'API_KEY_MISSING') {
-        content = (
-            <div className="street-view-info">
-                <p>Street View Panorama</p>
-                <img src={placeholderImageUrl} alt="Street View Placeholder" className="street-view-image" />
-                <small>API key is missing. Street View cannot be displayed.</small>
-            </div>
-        );
-    } else if (this.state.serviceStatus === 'GOOGLE_API_NOT_LOADED' && !this.props.google) {
-         content = (
-            <div className="street-view-info">
-                <p>Street View Panorama</p>
-                <img src={placeholderImageUrl} alt="Street View Placeholder" className="street-view-image" />
-                <small>Google Maps API not loaded yet. Waiting for map services...</small>
-            </div>
-         );
-    } else if (this.state.serviceStatus === 'LOCATION_MISSING' && !this.props.actualLocation) {
-        content = (
-            <div className="street-view-info">
-                <p>Street View Panorama</p>
-                <img src={placeholderImageUrl} alt="Street View Placeholder" className="street-view-image" />
-                <small>Waiting for location data...</small>
-            </div>
-        );
+    // Loading state
+    if (this.state.isLoading) {
+      content = <LoadingSpinner message="Loading Street View..." />;
     }
-    else if (this.state.serviceStatus && this.state.serviceStatus !== 'OK') {
+    // API Key missing
+    else if (this.state.serviceStatus === 'API_KEY_MISSING') {
       content = (
         <div className="street-view-info">
-          <p>Street View Not Available</p>
-          <img src={placeholderImageUrl} alt="Street View Unavailable" className="street-view-image" />
-          <small>
-            Could not load Street View for this location (Reason: {this.state.serviceStatus}).
-          </small>
+          <h3>Setup Required</h3>
+          <img src={placeholderImageUrl} alt="Street View Placeholder" className="street-view-image" />
+          <div className="error-details">
+            <p>Google Maps API key is missing.</p>
+            <small>
+              To enable Street View, add your Google Maps API key to the environment variables.
+              <br />See the README for setup instructions.
+            </small>
+          </div>
         </div>
       );
     }
-
-    // If no error content has been set, and API key is present, render the panorama div.
-    // The panorama div is also rendered when serviceStatus is 'OK'.
-    if (!content && apiKey) {
-         content = <div ref={this.streetViewRef} className="street-view-image" style={{ height: '100%', width: '100%' }}></div>;
-    } else if (!content && !apiKey) { // Fallback if apiKey just became missing after initial checks (unlikely)
-        content = (
-            <div className="street-view-info">
-                <p>Street View Panorama</p>
-                <img src={placeholderImageUrl} alt="Street View Placeholder" className="street-view-image" />
-                <small>API key is missing. Street View cannot be displayed.</small>
-            </div>
-        );
+    // Google API not loaded
+    else if (this.state.serviceStatus === 'GOOGLE_API_NOT_LOADED' && !this.props.google) {
+      content = <LoadingSpinner message="Loading Google Maps API..." />;
     }
-
+    // Location missing
+    else if (this.state.serviceStatus === 'LOCATION_MISSING' && !this.props.actualLocation) {
+      content = <LoadingSpinner message="Waiting for location data..." />;
+    }
+    // Street View service error
+    else if (this.state.serviceStatus && this.state.serviceStatus !== 'OK') {
+      content = (
+        <div className="street-view-info">
+          <h3>Street View Unavailable</h3>
+          <img src={placeholderImageUrl} alt="Street View Unavailable" className="street-view-image" />
+          <div className="error-details">
+            <p>Street View is not available for this location.</p>
+            <small>
+              This might be due to the location being in a remote area or privacy restrictions.
+              <br />Status: {this.state.serviceStatus}
+            </small>
+          </div>
+        </div>
+      );
+    }
+    // Success case - render panorama
+    else if (apiKey && this.state.serviceStatus === 'OK') {
+      content = <div ref={this.streetViewRef} className="street-view-panorama" />;
+    }
+    // Initial state - waiting for data
+    else if (apiKey) {
+      content = <LoadingSpinner message="Initializing Street View..." />;
+    }
+    // Fallback
+    else {
+      content = (
+        <div className="street-view-info">
+          <h3>Setup Required</h3>
+          <img src={placeholderImageUrl} alt="Street View Placeholder" className="street-view-image" />
+          <div className="error-details">
+            <p>Google Maps API key is missing.</p>
+            <small>Please configure your API key to enable Street View.</small>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="street-view-wrapper">

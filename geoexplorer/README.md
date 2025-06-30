@@ -1,4 +1,92 @@
-# Getting Started with Create React App
+# GeoExplorer
+
+A React-based geographical guessing game where players explore locations through Street View and guess where they are on an interactive map.
+
+## 🎮 How to Play
+
+1. You'll be shown a Street View panorama of a famous location
+2. Explore the 360-degree view to gather clues about your location
+3. Click on the world map to place your guess
+4. See how close you were and earn points based on accuracy
+5. Complete 5 rounds and see your total score!
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js (version 14 or higher)
+- npm or yarn
+- Google Maps API Key (see setup below)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd geoexplorer
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up your environment variables (see **API Configuration** below)
+
+4. Start the development server:
+   ```bash
+   npm start
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) to view the game
+
+## 🔧 API Configuration
+
+### Google Maps API Setup
+
+**This step is REQUIRED for the game to work properly.**
+
+1. **Get a Google Maps API Key:**
+   - Go to the [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Navigate to "APIs & Services" > "Credentials"
+   - Click "Create Credentials" > "API key"
+   - **Important**: Enable these APIs for your project:
+     - Maps JavaScript API
+     - Street View Static API
+
+2. **Configure the API Key:**
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edit `.env` and replace `your_google_maps_api_key_here` with your actual API key:
+     ```
+     REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyBvOkBwgGlbUiuS-oKrPQFMQkrPQFMQkrPQFM
+     ```
+
+3. **Optional: Google Sign-In Setup**
+   - For user authentication, also add your Google OAuth Client ID:
+     ```
+     REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id_here
+     ```
+
+### Security Note
+
+- Never commit your `.env` file to version control
+- The `.env` file is already in `.gitignore`
+- For production deployment, set environment variables through your hosting platform
+
+## 🎯 Game Features
+
+- **Street View Integration**: Explore real locations through Google Street View
+- **Interactive World Map**: Click to place your guesses
+- **Scoring System**: Points based on distance accuracy
+- **Multiple Rounds**: 5 famous landmarks per game
+- **User Profiles**: Google Sign-In with game statistics
+- **Responsive Design**: Works on desktop and mobile devices
+
+## 📁 Project Structure
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
