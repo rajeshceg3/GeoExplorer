@@ -1,7 +1,22 @@
 [
-  { "name": "Eiffel Tower", "lat": 48.8584, "lng": 2.2945 },
-  { "name": "Statue of Liberty", "lat": 40.6892, "lng": -74.0445 },
-  { "name": "Sydney Opera House", "lat": -33.8568, "lng": 151.2153 },
-  { "name": "Taj Mahal", "lat": 27.1751, "lng": 78.0421 },
-  { "name": "Colosseum", "lat": 41.8902, "lng": 12.4922 }
+  { "name": "Eiffel Tower", "lat": 48.8584, "lng": 2.2945, "difficulty": "easy", "category": "landmark" },
+  { "name": "Statue of Liberty", "lat": 40.6892, "lng": -74.0445, "difficulty": "easy", "category": "landmark" },
+  { "name": "Sydney Opera House", "lat": -33.8568, "lng": 151.2153, "difficulty": "easy", "category": "landmark" },
+  { "name": "Taj Mahal", "lat": 27.1751, "lng": 78.0421, "difficulty": "easy", "category": "landmark" },
+  { "name": "Colosseum", "lat": 41.8902, "lng": 12.4922, "difficulty": "easy", "category": "landmark" },
+  { "name": "Times Square", "lat": 40.7580, "lng": -73.9855, "difficulty": "medium", "category": "urban" },
+  { "name": "Shibuya Crossing", "lat": 35.6598, "lng": 139.7006, "difficulty": "medium", "category": "urban" },
+  { "name": "Red Square", "lat": 55.7539, "lng": 37.6208, "difficulty": "medium", "category": "landmark" },
+  { "name": "Machu Picchu", "lat": -13.1631, "lng": -72.5450, "difficulty": "hard", "category": "landmark" },
+  { "name": "Stonehenge", "lat": 51.1789, "lng": -1.8262, "difficulty": "medium", "category": "landmark" },
+  { "name": "Christ the Redeemer", "lat": -22.9519, "lng": -43.2105, "difficulty": "easy", "category": "landmark" },
+  { "name": "Great Wall of China", "lat": 40.4319, "lng": 116.5704, "difficulty": "medium", "category": "landmark" },
+  { "name": "Golden Gate Bridge", "lat": 37.8199, "lng": -122.4783, "difficulty": "easy", "category": "landmark" },
+  { "name": "Big Ben", "lat": 51.5007, "lng": -0.1246, "difficulty": "easy", "category": "landmark" },
+  { "name": "Neuschwanstein Castle", "lat": 47.5576, "lng": 10.7498, "difficulty": "medium", "category": "landmark" },
+  { "name": "Santorini", "lat": 36.3932, "lng": 25.4615, "difficulty": "medium", "category": "nature" },
+  { "name": "Burj Khalifa", "lat": 25.1972, "lng": 55.2744, "difficulty": "easy", "category": "landmark" },
+  { "name": "Chichen Itza", "lat": 20.6843, "lng": -88.5678, "difficulty": "hard", "category": "landmark" },
+  { "name": "Mt. Rushmore", "lat": 43.8791, "lng": -103.4591, "difficulty": "medium", "category": "landmark" },
+  { "name": "Angkor Wat", "lat": 13.4125, "lng": 103.8670, "difficulty": "hard", "category": "landmark" }
 ]

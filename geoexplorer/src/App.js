@@ -31,7 +31,7 @@ function App() {
   // Initialize state variables for game logic
   const [currentRound, setCurrentRound] = useState(1);
   const [gamePhase, setGamePhase] = useState('guessing'); // 'guessing', 'round_summary', 'game_over'
-  const [locations, setLocations] = useState(gameLocationsData);
+  const [locations, setLocations] = useState([]);
   const [playerGuess, setPlayerGuess] = useState(null); // { lat: ..., lng: ... }
   const [actualLocation, setActualLocation] = useState(null); // { lat: ..., lng: ... } for the current round
   const [distance, setDistance] = useState(null);
@@ -47,13 +47,32 @@ function App() {
   const navigateToGame = () => setCurrentView('game');
   const navigateToProfile = () => setCurrentView('profile');
 
+  // Function to randomly select locations for a new game
+  const selectRandomLocations = (count = 5) => {
+    const shuffled = [...gameLocationsData].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
+  // Initialize game locations on component mount
+  useEffect(() => {
+    if (locations.length === 0) {
+      const selectedLocations = selectRandomLocations();
+      setLocations(selectedLocations);
+    }
+  }, [locations.length]);
+
   // Google Sign-In initialization and user state handling
   useEffect(() => {
-    /* global google */
-    google.accounts.id.initialize({
-      client_id: "YOUR_GOOGLE_CLIENT_ID", // Replace with your actual client ID
-      callback: handleCredentialResponse,
-    });
+    const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+    if (googleClientId && window.google) {
+      /* global google */
+      google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: handleCredentialResponse,
+      });
+    } else if (!googleClientId) {
+      console.warn("Google Client ID is missing. Sign-in functionality will be disabled.");
+    }
   }, []);
 
   // Handle credential response from Google Sign-In
@@ -145,19 +164,14 @@ function App() {
 
   // Reset game state to play again
   const handlePlayAgain = () => {
+    // Select new random locations for variety
+    const newLocations = selectRandomLocations();
+    setLocations(newLocations);
     setCurrentRound(1);
     setGamePhase('guessing');
     setPlayerGuess(null);
-    // Explicitly set actualLocation to the first location for the new game.
-    // Ensure 'locations' state is guaranteed to be populated here.
-    // Given it's initialized with gameLocationsData and not changed, it should be safe.
-    if (locations && locations.length > 0) {
-      setActualLocation(locations[0]);
-    } else {
-      // Fallback or error if locations aren't loaded, though unlikely with current setup
-      setActualLocation(null);
-      console.error("handlePlayAgain: Locations array is empty or not loaded.");
-    }
+    // actualLocation will be set by useEffect when locations update
+    setActualLocation(null);
     setDistance(null);
     setRoundScore(0);
     setTotalScore(0);
@@ -181,7 +195,7 @@ function App() {
             profilePicUrl={profilePicUrl}
             handleSignOut={handleSignOut}
             handleCredentialResponse={handleCredentialResponse}
-            googleClientId="YOUR_GOOGLE_CLIENT_ID"
+            googleClientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
           />
         </div>
       </header>
@@ -218,6 +232,9 @@ function App() {
                     distance={distance}
                     roundScore={roundScore}
                     totalScore={totalScore}
+                    locationName={actualLocation?.name}
+                    currentRound={currentRound}
+                    totalRounds={locations.length}
                   />
                   <button onClick={handleNextRound} className="primary-action-button">
                     {currentRound < locations.length ? 'Next Round' : 'Show Final Score'}
