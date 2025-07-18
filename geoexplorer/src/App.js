@@ -204,11 +204,24 @@ function App() {
         <>
           {(gamePhase === 'guessing' || gamePhase === 'round_summary') && (
             <>
-              <div className="container fade-in-section">
-                <div className="street-view-container">
+              <div className="container">
+                <div
+                  className="street-view-container"
+                  style={{
+                    height: gamePhase === 'round_summary' ? '300px' : '500px',
+                  }}
+                >
                   <StreetView actualLocation={actualLocation} />
                 </div>
-                <div className="map-container">
+                <div
+                  className="map-container"
+                  style={{
+                    height: gamePhase === 'round_summary' ? '300px' : '0px',
+                    opacity: gamePhase === 'round_summary' ? 1 : 0,
+                    padding: gamePhase === 'round_summary' ? '20px' : '0px',
+                    boxShadow: gamePhase === 'round_summary' ? '0 4px 12px rgba(0, 0, 0, 0.08)' : 'none',
+                  }}
+                >
                   <MapContainer
                     playerGuess={playerGuess}
                     actualLocation={actualLocation}

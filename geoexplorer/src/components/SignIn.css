@@ -1,59 +1,30 @@
 .signInContainer {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 20px;
-  border: 1px solid #004D40; /* Darker shade of primary for border */
-  border-radius: 8px;
-  background-color: #FFF8E1; /* Lighter tint of secondary color */
-  max-width: 300px;
-  margin: 20px auto;
 }
 
 .userInfo {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 10px;
 }
 
 .profilePic {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
 }
 
-.userName {
-  margin-bottom: 15px;
-  font-size: 1.1em;
-  color: #004D40; /* Darker shade of primary for text */
-}
-
-.signInButton,
 .signOutButton {
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid #d2d2d7;
+  color: #1d1d1f;
+  padding: 8px 16px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 1em;
   transition: background-color 0.3s ease;
 }
 
-.signInButton {
-  background-color: #4285f4;
-  color: white;
-}
-
-.signInButton:hover {
-  background-color: #357ae8;
-}
-
-.signOutButton {
-  background-color: #FF6F00; /* New accent color */
-  color: white; /* White text */
-}
-
 .signOutButton:hover {
-  background-color: #E65100; /* Darker shade of accent color for hover */
+  background-color: #f5f5f7;
 }
