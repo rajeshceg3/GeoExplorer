@@ -1,48 +1,8 @@
-.map-wrapper {
-  width: 100%;
-  height: 100%;
-  position: relative; /* Important for google-maps-react containerStyle */
-}
-
-.interactive-map {
-  width: 100%;
-  height: 100%;
-}
-
 .map-api-key-missing-error {
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100%;
-  padding: 20px;
-  background-color: #FFE0B2; /* Light orange - accent color shade */
-  color: #333333; /* Dark text for readability */
-  border: 1px solid #FFCC80; /* Orange accent border */
-  text-align: center;
+  font-size: 1.2em;
+  color: #8e8e93;
 }
-
-.map-api-key-missing-error h2 {
-  color: #333333; /* Dark text for readability */
-  margin-bottom: 15px;
-}
-
-.map-instructions {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background-color: rgba(0, 121, 107, 0.7); /* Semi-transparent primary color */
-  color: #FFFFFF; /* White text for readability */
-  padding: 8px 12px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  z-index: 10; /* Ensure it's above the map */
-  font-size: 0.9em;
-}
-
-.map-instructions p {
-  margin: 0;
-}
-
-/* Styling for the map container in App.css might need adjustment if it constrains height too much */
-/* Ensure .map-container in App.css gives enough height for this component to be useful */

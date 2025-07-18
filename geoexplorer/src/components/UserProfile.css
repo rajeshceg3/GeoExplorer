@@ -1,61 +1,47 @@
 .user-profile-container {
-  border: 1px solid #ccc;
-  padding: 20px;
-  margin: 20px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 30px;
 }
 
-.profile-info {
-  margin-top: 15px;
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
 }
 
 .profile-avatar {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  margin-bottom: 15px;
-  object-fit: cover; /* Ensures the image covers the area without distortion */
-  border: 2px solid #ddd;
 }
 
-.default-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #e0e0e0;
-  color: #757575;
+.profile-header h2 {
+  font-size: 2em;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stats-container {
   display: flex;
+  gap: 40px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 15px;
-  font-size: 14px;
-  border: 2px solid #ddd;
 }
 
-.user-name {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin-bottom: 10px;
+.stat-value {
+  font-size: 2.5em;
+  font-weight: 700;
 }
 
-.user-profile-container h2 {
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.user-profile-container p {
-  font-size: 1em;
-  color: #555;
-  line-height: 1.6;
-  margin-bottom: 8px;
-}
-
-.user-stat-item {
-  /* Inherits styles from .user-profile-container p */
-  /* Can add specific styles here if needed, e.g., */
-  margin-left: auto;  /* Example: if you want to center them in a flex container */
-  margin-right: auto; /* Example: if you want to center them in a flex container */
-  /* For now, just ensuring the class is present for future styling */
+.stat-label {
+  font-size: 1.1em;
+  color: #8e8e93;
 }

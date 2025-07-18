@@ -1,167 +1,165 @@
-/* General App styling */
-.App {
-  text-align: center;
-  font-family: 'Open Sans', Arial, sans-serif; /* Updated font family */
-  color: #333333; /* Updated text color for readability */
+:root {
+  --background-color: #f5f5f7;
+  --text-color: #1d1d1f;
+  --accent-color: #007aff;
+  --container-background: #ffffff;
+  --subtle-border-color: #d2d2d7;
 }
 
-/* Header styling */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+}
+
+.App {
+  text-align: center;
+}
+
 .App-header {
-  background-color: #00796B; /* New primary color */
-  padding: 15px 30px; /* Updated padding for a more balanced look */
-  color: white;
-  /* text-align: center; */ /* Replaced by flex properties */
+  background-color: transparent;
+  padding: 20px;
+  color: var(--text-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  box-sizing: border-box;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added subtle shadow for lift */
+  border-bottom: 1px solid var(--subtle-border-color);
 }
 
 .App-header h1 {
   margin: 0;
-  font-size: 2.2em; /* Adjusted font size */
-  font-family: 'Montserrat', sans-serif; /* Updated font family */
+  font-size: 1.5em;
+  font-weight: 700;
 }
 
-/* Container for layout sections */
 .container {
-  display: flex; /* Arrange children (street view and map) in a row */
-  flex-wrap: wrap; /* Allow wrapping if screen is too small */
-  justify-content: space-around; /* Distribute space around items */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
-  gap: 20px; /* Added gap for better spacing */
+  gap: 20px;
 }
 
-/* Street View container styling */
-.street-view-container {
-  border: 2px solid #004D40; /* Darker shade of primary color */
-  padding: 15px;
-  margin: 10px;
-  background-color: #FFF8E1; /* Lighter tint of secondary color #FFDAB9 */
-  min-height: 450px; /* Increased minimum height */
-  flex: 1; /* Allow flex grow/shrink */
-  min-width: 300px; /* Minimum width before wrapping */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
-}
-
-/* Map container styling */
+.street-view-container,
 .map-container {
-  border: 2px solid #004D40; /* Darker shade of primary color */
-  padding: 15px;
-  margin: 10px;
-  background-color: #FFF8E1; /* Lighter tint of secondary color #FFDAB9 */
-  min-height: 450px; /* Increased minimum height */
-  flex: 1; /* Allow flex grow/shrink */
-  min-width: 300px; /* Minimum width before wrapping */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+  background-color: var(--container-background);
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 900px;
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.5s ease-in-out;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column; /* Stack items vertically on smaller screens */
-    align-items: center; /* Center items when stacked */
-  }
-
-  .street-view-container,
-  .map-container {
-    width: 90%; /* Take more width on smaller screens */
-    min-width: unset; /* Remove min-width constraint */
-    margin-bottom: 20px; /* Add space between stacked items */
-  }
+.round-summary-container {
+  background-color: var(--container-background);
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+  width: 100%;
+  max-width: 900px;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
-/* Primary action button styling */
 .primary-action-button {
-  background-color: #FF6F00; /* Accent color */
+  background-color: var(--accent-color);
   color: white;
   border: none;
-  padding: 10px 20px;
-  font-size: 1em;
-  font-weight: bold;
-  border-radius: 5px;
+  padding: 12px 24px;
+  font-size: 1.1em;
+  font-weight: 500;
+  border-radius: 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin: 10px; /* Added margin for spacing */
+  margin-top: 20px;
 }
 
 .primary-action-button:hover,
 .primary-action-button:focus {
-  background-color: #E65100; /* Darker accent color for hover/focus */
+  background-color: #005ec4;
   outline: none;
 }
 
-.primary-action-button:disabled,
-.primary-action-button[disabled] { /* Covering both attribute forms */
-  background-color: #FFB74D; /* Lighter shade of accent color */
-  color: #FFFFFF; /* Keep text white for contrast on lighter orange */
-  opacity: 0.7; /* Slightly more opaque than typical 0.6 for better visibility on orange */
+.primary-action-button:disabled {
+  background-color: #a0c7e8;
   cursor: not-allowed;
 }
 
-/* RoundInfoDisplay value styling */
-.info-value {
-  font-weight: bold;
-  color: #00796B; /* Primary color */
-}
-
-.score-value {
-  font-weight: bold;
-  font-size: 1.1em;
-  color: #FF6F00; /* Accent color */
-}
-
-.total-score-value {
-  font-weight: bold;
-  font-size: 1.2em;
-  color: #004D40; /* Darker primary color */
-}
-
-/* GameOverScreen styling */
-.game-summary {
+.round-summary-container {
+  background-color: var(--container-background);
   padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.game-summary {
+  padding: 40px;
   text-align: center;
 }
 
 .game-summary h2 {
   font-size: 2.5em;
-  color: #00796B; /* Primary color */
+  color: var(--text-color);
   margin-bottom: 15px;
 }
 
-.game-summary .final-score { /* Class to be added to the final score paragraph */
+.game-summary .final-score {
   font-size: 1.8em;
-  color: #FF6F00; /* Accent color */
+  color: var(--accent-color);
   font-weight: bold;
   margin-bottom: 20px;
 }
 
-.game-summary h3 {
-  font-size: 1.5em;
-  color: #00796B; /* Primary color */
-  margin-bottom: 10px;
+.round-scores-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 400px;
 }
 
-.game-summary .round-score-item { /* Class to be added to individual round score paragraphs */
-  font-size: 1.1em;
-  color: #333333; /* Default text color */
-  margin-bottom: 5px;
+.round-score-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #f5f5f7;
+  border-radius: 12px;
 }
 
-/* Fade-in animation */
+.round-number {
+  font-weight: 500;
+}
+
+.round-score {
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.fade-in-section {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px); /* Subtle upward movement */
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.fade-in-section {
-  animation: fadeIn 0.5s ease-out forwards;
 }
