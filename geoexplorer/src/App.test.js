@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders GeoExplorer title', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  // Use getAllByText because "GeoExplorer" appears in the header and in the start screen
+  const titleElements = screen.getAllByText(/GeoExplorer/i);
+  expect(titleElements.length).toBeGreaterThan(0);
+});
+
+test('renders difficulty selection', () => {
+  render(<App />);
+  const difficultyTitle = screen.getByText(/Select Difficulty/i);
+  expect(difficultyTitle).toBeInTheDocument();
 });
