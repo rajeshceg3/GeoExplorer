@@ -4,6 +4,7 @@ import './App.css';
 import SignIn from './components/SignIn';
 import StreetView from './components/StreetView'; // Ensure this is the default import
 import MapContainer from './components/Map'; // Import the Map component
+import LoadingSpinner from './components/LoadingSpinner';
 import { calculateDistance, calculateScore } from './utils/geometry';
 import GameOverScreen from './components/GameOverScreen';
 import RoundInfoDisplay from './components/RoundInfoDisplay';
@@ -40,6 +41,10 @@ function App() {
   const [roundScore, setRoundScore] = useState(0);
   const [totalScore, setTotalScore] = useState(0);
   const [roundScores, setRoundScores] = useState([]); // Array to store scores of each round
+  const [hintRevealed, setHintRevealed] = useState(false);
+  const hintPenalty = 500;
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // State for user's lifetime statistics (session-based)
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -78,6 +83,8 @@ function App() {
     setRoundScore(0);
     setTotalScore(0);
     setRoundScores([]);
+    setHintRevealed(false);
+    setCurrentStreak(0);
   };
 
   // Google Sign-In initialization and user state handling
@@ -137,16 +144,13 @@ function App() {
     }
   };
 
+  const handleRevealHint = () => {
+    setHintRevealed(true);
+  };
+
   // Define handleMakeGuess function
   const handleMakeGuess = () => {
     if (playerGuess) { // Ensure a guess has been made
-      setGamePhase('round_summary');
-    }
-  };
-
-  // Calculate score and distance when gamePhase changes to 'round_summary'
-  useEffect(() => {
-    if (gamePhase === 'round_summary' && playerGuess && actualLocation) {
       const dist = calculateDistance(
         playerGuess.lat,
         playerGuess.lng,
@@ -154,22 +158,43 @@ function App() {
         actualLocation.lng
       );
       setDistance(dist);
-      const score = calculateScore(dist);
+
+      let score = calculateScore(dist);
+      if (hintRevealed) {
+        score = Math.max(0, score - hintPenalty);
+      }
+
+      // Streak logic
+      let newStreak = currentStreak;
+      if (dist < 1000) {
+        newStreak += 1;
+        score += newStreak * 100;
+      } else {
+        newStreak = 0;
+      }
+      setCurrentStreak(newStreak);
+
       setRoundScore(score);
       setTotalScore(prevTotalScore => prevTotalScore + score);
       setRoundScores(prevRoundScores => [...prevRoundScores, score]);
+      setGamePhase('round_summary');
     }
-  }, [gamePhase, playerGuess, actualLocation]);
+  };
 
   // Advance to next round or end game
   const handleNextRound = () => {
     const nextRoundNumber = currentRound + 1;
     if (nextRoundNumber <= locations.length) {
-      setCurrentRound(nextRoundNumber);
-      setPlayerGuess(null);
-      setDistance(null);
-      setRoundScore(0);
-      setGamePhase('guessing');
+      setIsLoading(true);
+      setTimeout(() => {
+        setCurrentRound(nextRoundNumber);
+        setPlayerGuess(null);
+        setDistance(null);
+        setRoundScore(0);
+        setHintRevealed(false);
+        setGamePhase('guessing');
+        setIsLoading(false);
+      }, 1500);
       // actualLocation will be updated by the useEffect hook watching currentRound
     } else {
       setGamePhase('game_over');
@@ -190,7 +215,14 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>GeoExplorer</h1>
+        <div className="header-left">
+          <h1>GeoExplorer</h1>
+          {currentView === 'game' && currentStreak > 0 && (
+            <div className="streak-badge" title="Consecutive guesses < 1000km">
+              🔥 Streak: {currentStreak}
+            </div>
+          )}
+        </div>
         <div className="header-controls">
           {isSignedIn && currentView === 'game' && (
             <button onClick={navigateToProfile} className="profile-button">
@@ -213,7 +245,12 @@ function App() {
           {gamePhase === 'start' && (
             <GameStartScreen onStartGame={handleStartGame} />
           )}
-          {(gamePhase === 'guessing' || gamePhase === 'round_summary') && (
+          {isLoading && (
+            <div className="loading-overlay">
+              <LoadingSpinner message="Traveling to next destination..." />
+            </div>
+          )}
+          {!isLoading && (gamePhase === 'guessing' || gamePhase === 'round_summary') && (
             <>
               <div className="container">
                 <div className={`street-view-container ${gamePhase}`}>
@@ -232,13 +269,28 @@ function App() {
                 </div>
               </div>
               {gamePhase === 'guessing' && (
-                <button
-                  onClick={handleMakeGuess}
-                  disabled={!playerGuess}
-                  className="primary-action-button"
-                >
-                  Make Guess
-                </button>
+                <div className="guessing-controls">
+                  <button
+                    onClick={handleRevealHint}
+                    disabled={hintRevealed}
+                    className="secondary-action-button"
+                    title={`Revealing a hint costs ${hintPenalty} points`}
+                  >
+                    {hintRevealed ? 'Hint Revealed' : `Get Hint (-${hintPenalty})`}
+                  </button>
+                  <button
+                    onClick={handleMakeGuess}
+                    disabled={!playerGuess}
+                    className="primary-action-button"
+                  >
+                    Make Guess
+                  </button>
+                </div>
+              )}
+              {gamePhase === 'guessing' && hintRevealed && (
+                <div className="hint-display fade-in-section">
+                  <p><strong>Hint:</strong> {actualLocation?.hint}</p>
+                </div>
               )}
               {gamePhase === 'round_summary' && (
                 <div className="round-summary-container fade-in-section">
@@ -250,6 +302,8 @@ function App() {
                     currentRound={currentRound}
                     totalRounds={locations.length}
                     funFact={actualLocation?.fun_fact}
+                    hintPenalty={hintRevealed ? hintPenalty : 0}
+                    streakBonus={distance < 1000 ? (currentStreak * 100) : 0}
                   />
                   <button onClick={handleNextRound} className="primary-action-button">
                     {currentRound < locations.length ? 'Next Round' : 'Show Final Score'}
