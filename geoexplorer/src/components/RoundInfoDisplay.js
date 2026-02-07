@@ -1,11 +1,19 @@
 import React from 'react';
 
-const RoundInfoDisplay = ({ distance, roundScore, totalScore, locationName, currentRound, totalRounds }) => {
+const RoundInfoDisplay = ({ distance, roundScore, totalScore, locationName, currentRound, totalRounds, funFact }) => {
   return (
     <div className="round-info">
       {locationName && (
         <h3 className="location-reveal">📍 {locationName}</h3>
       )}
+
+      {funFact && (
+        <div className="fun-fact-container">
+          <h4>💡 Did you know?</h4>
+          <p>{funFact}</p>
+        </div>
+      )}
+
       <div className="round-stats">
         <p>Round {currentRound} of {totalRounds}</p>
         {distance !== null && (

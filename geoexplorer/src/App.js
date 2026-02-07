@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import './App.css';
 import SignIn from './components/SignIn';
 import StreetView from './components/StreetView'; // Ensure this is the default import
@@ -8,6 +8,7 @@ import { calculateDistance, calculateScore } from './utils/geometry';
 import GameOverScreen from './components/GameOverScreen';
 import RoundInfoDisplay from './components/RoundInfoDisplay';
 import UserProfile from './components/UserProfile'; // Import UserProfile
+import GameStartScreen from './components/GameStartScreen';
 import gameLocationsData from './locations.json';
 
 // Define hardcoded locations
@@ -30,7 +31,8 @@ function App() {
 
   // Initialize state variables for game logic
   const [currentRound, setCurrentRound] = useState(1);
-  const [gamePhase, setGamePhase] = useState('guessing'); // 'guessing', 'round_summary', 'game_over'
+  const [gamePhase, setGamePhase] = useState('start'); // 'start', 'guessing', 'round_summary', 'game_over'
+  const [gameDifficulty, setGameDifficulty] = useState('all');
   const [locations, setLocations] = useState([]);
   const [playerGuess, setPlayerGuess] = useState(null); // { lat: ..., lng: ... }
   const [actualLocation, setActualLocation] = useState(null); // { lat: ..., lng: ... } for the current round
@@ -48,18 +50,35 @@ function App() {
   const navigateToProfile = () => setCurrentView('profile');
 
   // Function to randomly select locations for a new game
-  const selectRandomLocations = (count = 5) => {
-    const shuffled = [...gameLocationsData].sort(() => 0.5 - Math.random());
+  const selectRandomLocations = (count = 5, difficulty = 'all') => {
+    let filtered = gameLocationsData;
+    if (difficulty !== 'all') {
+      filtered = gameLocationsData.filter(loc => loc.difficulty === difficulty);
+    }
+
+    // If fewer locations than count (e.g. hard only has 3), just use all of them
+    // Or if 0 found, fallback to all
+    if (filtered.length === 0) {
+      filtered = gameLocationsData;
+    }
+
+    const shuffled = [...filtered].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
   };
 
-  // Initialize game locations on component mount
-  useEffect(() => {
-    if (locations.length === 0) {
-      const selectedLocations = selectRandomLocations();
-      setLocations(selectedLocations);
-    }
-  }, [locations.length]);
+  const handleStartGame = (difficulty) => {
+    setGameDifficulty(difficulty);
+    const selectedLocations = selectRandomLocations(5, difficulty);
+    setLocations(selectedLocations);
+    setGamePhase('guessing');
+    setCurrentRound(1);
+    setPlayerGuess(null);
+    setActualLocation(null);
+    setDistance(null);
+    setRoundScore(0);
+    setTotalScore(0);
+    setRoundScores([]);
+  };
 
   // Google Sign-In initialization and user state handling
   useEffect(() => {
@@ -78,7 +97,7 @@ function App() {
   // Handle credential response from Google Sign-In
   const handleCredentialResponse = (response) => {
     console.log("Encoded JWT ID token: " + response.credential);
-    var decodedToken = jwt_decode(response.credential);
+    var decodedToken = jwtDecode(response.credential);
     setIsSignedIn(true);
     setUserName(decodedToken.name);
     setProfilePicUrl(decodedToken.picture);
@@ -164,19 +183,8 @@ function App() {
 
   // Reset game state to play again
   const handlePlayAgain = () => {
-    // Select new random locations for variety
-    const newLocations = selectRandomLocations();
-    setLocations(newLocations);
-    setCurrentRound(1);
-    setGamePhase('guessing');
-    setPlayerGuess(null);
-    // actualLocation will be set by useEffect when locations update
-    setActualLocation(null);
-    setDistance(null);
-    setRoundScore(0);
-    setTotalScore(0);
-    setRoundScores([]);
-    setCurrentView('game'); // Ensure game view is active when playing again
+    setGamePhase('start');
+    setCurrentView('game');
   };
 
   return (
@@ -202,32 +210,25 @@ function App() {
 
       {currentView === 'game' ? (
         <>
+          {gamePhase === 'start' && (
+            <GameStartScreen onStartGame={handleStartGame} />
+          )}
           {(gamePhase === 'guessing' || gamePhase === 'round_summary') && (
             <>
               <div className="container">
-                <div
-                  className="street-view-container"
-                  style={{
-                    height: gamePhase === 'round_summary' ? '300px' : '500px',
-                  }}
-                >
+                <div className={`street-view-container ${gamePhase}`}>
                   <StreetView actualLocation={actualLocation} />
                 </div>
-                <div
-                  className="map-container"
-                  style={{
-                    height: gamePhase === 'round_summary' ? '300px' : '0px',
-                    opacity: gamePhase === 'round_summary' ? 1 : 0,
-                    padding: gamePhase === 'round_summary' ? '20px' : '0px',
-                    boxShadow: gamePhase === 'round_summary' ? '0 4px 12px rgba(0, 0, 0, 0.08)' : 'none',
-                  }}
-                >
+                <div className={`map-container ${gamePhase}`}>
                   <MapContainer
                     playerGuess={playerGuess}
                     actualLocation={actualLocation}
                     handleMapClick={handleMapClick}
                     gamePhase={gamePhase}
                   />
+                  {gamePhase === 'guessing' && !playerGuess && (
+                    <div className="map-hover-hint">Guess Here</div>
+                  )}
                 </div>
               </div>
               {gamePhase === 'guessing' && (
@@ -248,6 +249,7 @@ function App() {
                     locationName={actualLocation?.name}
                     currentRound={currentRound}
                     totalRounds={locations.length}
+                    funFact={actualLocation?.fun_fact}
                   />
                   <button onClick={handleNextRound} className="primary-action-button">
                     {currentRound < locations.length ? 'Next Round' : 'Show Final Score'}

@@ -8,9 +8,9 @@ const SignIn = ({
   handleSignOut,
 }) => {
   useEffect(() => {
-    if (!isSignedIn) {
+    if (!isSignedIn && window.google) {
       /* global google */
-      google.accounts.id.renderButton(
+      window.google.accounts.id.renderButton(
         document.getElementById("signInDiv"),
         { theme: "outline", size: "large" }
       );
