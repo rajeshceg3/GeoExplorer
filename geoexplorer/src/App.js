@@ -6,6 +6,7 @@ import StreetView from './components/StreetView'; // Ensure this is the default 
 import MapContainer from './components/Map'; // Import the Map component
 import LoadingSpinner from './components/LoadingSpinner';
 import { calculateDistance, calculateScore, getRandomPointInRadius } from './utils/geometry';
+import { SeededRandom, shuffleArray } from './utils/random';
 import GameOverScreen from './components/GameOverScreen';
 import RoundInfoDisplay from './components/RoundInfoDisplay';
 import UserProfile from './components/UserProfile'; // Import UserProfile
@@ -93,6 +94,30 @@ function App() {
     setHintSource('none');
     setActiveIntel({ uplink: null });
     setIntelPoints(3); // Reset IP for new game
+    setCurrentStreak(0);
+  };
+
+  const handleDailyChallenge = () => {
+    const today = new Date().toDateString();
+    const rng = new SeededRandom(today);
+
+    // Shuffle all locations with the seeded RNG
+    const dailyLocations = shuffleArray(gameLocationsData, rng).slice(0, 5);
+
+    setGameDifficulty('daily');
+    setLocations(dailyLocations);
+    setGamePhase('guessing');
+    setCurrentRound(1);
+    setPlayerGuess(null);
+    setActualLocation(null);
+    setDistance(null);
+    setRoundScore(0);
+    setTotalScore(0);
+    setRoundScores([]);
+    setHintRevealed(false);
+    setHintSource('none');
+    setActiveIntel({ uplink: null });
+    setIntelPoints(3);
     setCurrentStreak(0);
   };
 
@@ -258,7 +283,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className="header-left">
-          <h1>GeoExplorer</h1>
+          <h1>GEO-EXPLORER // SYSTEM ONLINE</h1>
           {currentView === 'game' && currentStreak > 0 && (
             <div className="streak-badge" title="Consecutive guesses < 1000km">
               🔥 Streak: {currentStreak}
@@ -285,7 +310,10 @@ function App() {
       {currentView === 'game' ? (
         <>
           {gamePhase === 'start' && (
-            <GameStartScreen onStartGame={handleStartGame} />
+            <GameStartScreen
+              onStartGame={handleStartGame}
+              onDailyChallenge={handleDailyChallenge}
+            />
           )}
           {isLoading && (
             <div className="loading-overlay">
