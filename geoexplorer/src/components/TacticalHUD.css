@@ -1,0 +1,177 @@
+.tactical-hud {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 280px;
+  background-color: rgba(10, 20, 10, 0.9);
+  border: 1px solid #34c759;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  color: #34c759;
+  z-index: 1000;
+  box-shadow: 0 0 15px rgba(52, 199, 89, 0.3);
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+}
+
+.hud-header {
+  background-color: rgba(52, 199, 89, 0.2);
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #34c759;
+}
+
+.hud-title {
+  font-weight: bold;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.hud-status {
+  font-size: 0.7rem;
+  animation: blink 2s infinite;
+}
+
+.hud-intel-points {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(52, 199, 89, 0.3);
+}
+
+.ip-label {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-bottom: 5px;
+}
+
+.ip-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(52, 199, 89, 0.5);
+}
+
+.hud-controls {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hud-button {
+  background: transparent;
+  border: 1px solid #34c759;
+  color: #34c759;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-button:hover:not(:disabled) {
+  background-color: rgba(52, 199, 89, 0.1);
+  box-shadow: 0 0 10px rgba(52, 199, 89, 0.3);
+}
+
+.hud-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #555;
+  color: #555;
+}
+
+.hud-button.active {
+  background-color: rgba(52, 199, 89, 0.2);
+  border-color: #34c759;
+  color: #34c759;
+  cursor: default;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-icon {
+  font-size: 1.2rem;
+}
+
+.btn-text {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.btn-cost {
+  font-size: 0.8rem;
+  background-color: rgba(52, 199, 89, 0.2);
+  padding: 2px 5px;
+  border-radius: 2px;
+}
+
+.active-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #34c759;
+  color: #000;
+  font-size: 0.6rem;
+  padding: 2px 4px;
+  font-weight: bold;
+}
+
+.hud-footer {
+  font-size: 0.7rem;
+  padding: 5px 10px;
+  text-align: right;
+  opacity: 0.6;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@media (max-width: 768px) {
+  .tactical-hud {
+    top: auto;
+    bottom: 20px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .hud-header, .hud-footer {
+    display: none;
+  }
+
+  .hud-intel-points {
+    border-bottom: none;
+    border-right: 1px solid rgba(52, 199, 89, 0.3);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .ip-value {
+    font-size: 1.5rem;
+  }
+
+  .hud-controls {
+    flex: 1;
+    flex-direction: row;
+    padding: 10px;
+  }
+
+  .hud-button {
+    flex: 1;
+  }
+}

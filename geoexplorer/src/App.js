@@ -5,11 +5,12 @@ import SignIn from './components/SignIn';
 import StreetView from './components/StreetView'; // Ensure this is the default import
 import MapContainer from './components/Map'; // Import the Map component
 import LoadingSpinner from './components/LoadingSpinner';
-import { calculateDistance, calculateScore } from './utils/geometry';
+import { calculateDistance, calculateScore, getRandomPointInRadius } from './utils/geometry';
 import GameOverScreen from './components/GameOverScreen';
 import RoundInfoDisplay from './components/RoundInfoDisplay';
 import UserProfile from './components/UserProfile'; // Import UserProfile
 import GameStartScreen from './components/GameStartScreen';
+import TacticalHUD from './components/TacticalHUD';
 import gameLocationsData from './locations.json';
 
 // Define hardcoded locations
@@ -45,6 +46,11 @@ function App() {
   const hintPenalty = 500;
   const [currentStreak, setCurrentStreak] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Intel Ops State
+  const [intelPoints, setIntelPoints] = useState(3);
+  const [activeIntel, setActiveIntel] = useState({ uplink: null });
+  const [hintSource, setHintSource] = useState('none'); // 'none', 'penalty', 'intel'
 
   // State for user's lifetime statistics (session-based)
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -84,6 +90,9 @@ function App() {
     setTotalScore(0);
     setRoundScores([]);
     setHintRevealed(false);
+    setHintSource('none');
+    setActiveIntel({ uplink: null });
+    setIntelPoints(3); // Reset IP for new game
     setCurrentStreak(0);
   };
 
@@ -146,6 +155,33 @@ function App() {
 
   const handleRevealHint = () => {
     setHintRevealed(true);
+    setHintSource('penalty');
+  };
+
+  const handleActivateUplink = () => {
+    if (intelPoints >= 2 && actualLocation) {
+      setIntelPoints(prev => prev - 2);
+      // Generate a random center such that actualLocation is within 3000km radius
+      // We use getRandomPointInRadius(actualLocation, 2000) to get a center.
+      // If we draw a 3000km circle around that center, actualLocation is guaranteed to be inside
+      // because distance(center, actual) <= 2000 < 3000.
+      const center = getRandomPointInRadius(actualLocation.lat, actualLocation.lng, 2000);
+      setActiveIntel(prev => ({
+        ...prev,
+        uplink: {
+          center: center,
+          radius: 3000 // km
+        }
+      }));
+    }
+  };
+
+  const handleActivateReport = () => {
+    if (intelPoints >= 1 && !hintRevealed) {
+      setIntelPoints(prev => prev - 1);
+      setHintRevealed(true);
+      setHintSource('intel');
+    }
   };
 
   // Define handleMakeGuess function
@@ -160,7 +196,7 @@ function App() {
       setDistance(dist);
 
       let score = calculateScore(dist);
-      if (hintRevealed) {
+      if (hintRevealed && hintSource === 'penalty') {
         score = Math.max(0, score - hintPenalty);
       }
 
@@ -169,6 +205,10 @@ function App() {
       if (dist < 1000) {
         newStreak += 1;
         score += newStreak * 100;
+        // Bonus IP for streak
+        if (newStreak % 3 === 0) {
+             setIntelPoints(prev => prev + 1);
+        }
       } else {
         newStreak = 0;
       }
@@ -192,6 +232,8 @@ function App() {
         setDistance(null);
         setRoundScore(0);
         setHintRevealed(false);
+        setHintSource('none');
+        setActiveIntel({ uplink: null });
         setGamePhase('guessing');
         setIsLoading(false);
       }, 1500);
@@ -252,6 +294,15 @@ function App() {
           )}
           {!isLoading && (gamePhase === 'guessing' || gamePhase === 'round_summary') && (
             <>
+              {gamePhase === 'guessing' && (
+                <TacticalHUD
+                  intelPoints={intelPoints}
+                  onActivateUplink={handleActivateUplink}
+                  onActivateReport={handleActivateReport}
+                  isUplinkActive={!!activeIntel.uplink}
+                  isReportActive={hintRevealed}
+                />
+              )}
               <div className="container">
                 <div className={`street-view-container ${gamePhase}`}>
                   <StreetView actualLocation={actualLocation} />
@@ -262,6 +313,7 @@ function App() {
                     actualLocation={actualLocation}
                     handleMapClick={handleMapClick}
                     gamePhase={gamePhase}
+                    activeIntel={activeIntel}
                   />
                   {gamePhase === 'guessing' && !playerGuess && (
                     <div className="map-hover-hint">Guess Here</div>
@@ -274,9 +326,12 @@ function App() {
                     onClick={handleRevealHint}
                     disabled={hintRevealed}
                     className="secondary-action-button"
-                    title={`Revealing a hint costs ${hintPenalty} points`}
+                    title={`Revealing a hint costs ${hintPenalty} points (Free if using Field Report)`}
+                    style={{ opacity: hintSource === 'intel' ? 0.5 : 1 }}
                   >
-                    {hintRevealed ? 'Hint Revealed' : `Get Hint (-${hintPenalty})`}
+                     {hintRevealed
+                       ? (hintSource === 'intel' ? 'Intel Decrypted' : 'Hint Revealed')
+                       : `Emergency Hint (-${hintPenalty})`}
                   </button>
                   <button
                     onClick={handleMakeGuess}

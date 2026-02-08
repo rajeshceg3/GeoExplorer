@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
 import './Map.css';
+import MapCircle from './MapCircle';
 
 const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
 
@@ -37,6 +38,19 @@ export class MapContainer extends Component {
         className="interactive-map"
         disableDefaultUI={true}
       >
+        {this.props.activeIntel && this.props.activeIntel.uplink && (
+          <MapCircle
+            center={this.props.activeIntel.uplink.center}
+            radius={this.props.activeIntel.uplink.radius * 1000} // Convert km to meters
+            options={{
+              fillColor: '#34c759',
+              fillOpacity: 0.15,
+              strokeColor: '#34c759',
+              strokeOpacity: 0.8,
+              strokeWeight: 2,
+            }}
+          />
+        )}
         {this.props.playerGuess && (
           <Marker
             position={{ lat: this.props.playerGuess.lat, lng: this.props.playerGuess.lng }}

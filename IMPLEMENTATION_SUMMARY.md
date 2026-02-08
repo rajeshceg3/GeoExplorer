@@ -81,3 +81,28 @@ The most critical issue affecting user value was **Critical Bug CB-1**: Street V
 ## Value Delivered
 
 This implementation transforms GeoExplorer from a **broken prototype** to a **fully functional, engaging game** that users can actually play and enjoy. The focus on fixing the critical Street View bug while simultaneously improving content and user experience provides immediate and significant value to application users.
+## Strategic Enhancement: Geo-Intelligence Module (GIM)
+
+### Overview
+Transformed the gameplay from a simple guessing game into a tactical operation by introducing the **Geo-Intelligence Module (GIM)**. This feature adds resource management and strategic depth.
+
+### Key Features Implemented
+1.  **Tactical HUD**: A military-style interface for managing Intel Points (IP) and activating tools.
+2.  **Intel Economy**: Players start with 3 IP. Usage:
+    -   **Satellite Uplink (2 IP)**: Deploys a visual overlay on the map, narrowing down the target location to a specific region (3000km radius).
+    -   **Field Report (1 IP)**: Decrypts the location hint without the score penalty associated with the standard "Emergency Hint".
+3.  **Dynamic Map Overlays**: Visual feedback on the map using `MapCircle` to represent satellite coverage.
+4.  **Streak Bonuses**: Awarding additional IP for consecutive high-accuracy guesses (every 3 streaks).
+
+### Technical Implementation
+-   **Math & Geometry**: Enhanced `src/utils/geometry.js` with `getDestinationPoint` and `getRandomPointInRadius` to calculate realistic satellite coverage zones that guarantee target inclusion.
+-   **Component Architecture**:
+    -   Created `TacticalHUD` for the UI.
+    -   Created `MapCircle` for Google Maps integration.
+    -   Refactored `App.js` to manage GIM state.
+-   **Verification**: Added comprehensive frontend verification with Playwright.
+
+### Value Delivered
+-   **Strategic Depth**: Players now have to make decisions on when to spend their limited Intel Points.
+-   **Engagement**: The "Operator" theme increases immersion.
+-   **Scalability**: The system is designed to easily add more "Intel Tools" in the future (e.g., Thermal Scan, Grid Search).
