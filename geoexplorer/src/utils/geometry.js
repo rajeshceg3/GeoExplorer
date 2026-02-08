@@ -40,3 +40,61 @@ export function calculateScore(distanceKm) {
 
   return Math.round(Math.max(0, score)); // Ensure score is not negative and is rounded
 }
+
+/**
+ * Converts degrees to radians.
+ * @param {number} deg Angle in degrees.
+ * @returns {number} Angle in radians.
+ */
+function toRad(deg) {
+  return deg * Math.PI / 180;
+}
+
+/**
+ * Converts radians to degrees.
+ * @param {number} rad Angle in radians.
+ * @returns {number} Angle in degrees.
+ */
+function toDeg(rad) {
+  return rad * 180 / Math.PI;
+}
+
+/**
+ * Calculates a new coordinate given a starting point, bearing, and distance.
+ * @param {number} lat Latitude of starting point in degrees.
+ * @param {number} lng Longitude of starting point in degrees.
+ * @param {number} bearing Bearing in degrees (0-360, 0 is North).
+ * @param {number} distanceKm Distance to travel in kilometers.
+ * @returns {object} Object containing new lat and lng.
+ */
+export function getDestinationPoint(lat, lng, bearing, distanceKm) {
+  const R = 6371; // Earth's radius in km
+  const lat1 = toRad(lat);
+  const lon1 = toRad(lng);
+  const brng = toRad(bearing);
+
+  let lat2 = Math.asin(Math.sin(lat1) * Math.cos(distanceKm / R) +
+                       Math.cos(lat1) * Math.sin(distanceKm / R) * Math.cos(brng));
+  let lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(distanceKm / R) * Math.cos(lat1),
+                               Math.cos(distanceKm / R) - Math.sin(lat1) * Math.sin(lat2));
+
+  return {
+    lat: toDeg(lat2),
+    lng: toDeg(lon2)
+  };
+}
+
+/**
+ * Generates a random point within a specified radius of a center point.
+ * @param {number} lat Latitude of center point.
+ * @param {number} lng Longitude of center point.
+ * @param {number} radiusKm Maximum radius in kilometers.
+ * @returns {object} Object containing lat and lng of the random point.
+ */
+export function getRandomPointInRadius(lat, lng, radiusKm) {
+  // Random distance within radius (uniform distribution in area)
+  const r = radiusKm * Math.sqrt(Math.random());
+  const theta = Math.random() * 360;
+
+  return getDestinationPoint(lat, lng, theta, r);
+}
