@@ -12,6 +12,7 @@ import RoundInfoDisplay from './components/RoundInfoDisplay';
 import UserProfile from './components/UserProfile'; // Import UserProfile
 import GameStartScreen from './components/GameStartScreen';
 import TacticalHUD from './components/TacticalHUD';
+import ScanlineOverlay from './components/ScanlineOverlay';
 import gameLocationsData from './locations.json';
 
 // Define hardcoded locations
@@ -47,6 +48,7 @@ function App() {
   const hintPenalty = 500;
   const [currentStreak, setCurrentStreak] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   // Intel Ops State
   const [intelPoints, setIntelPoints] = useState(3);
@@ -211,38 +213,43 @@ function App() {
 
   // Define handleMakeGuess function
   const handleMakeGuess = () => {
-    if (playerGuess) { // Ensure a guess has been made
-      const dist = calculateDistance(
-        playerGuess.lat,
-        playerGuess.lng,
-        actualLocation.lat,
-        actualLocation.lng
-      );
-      setDistance(dist);
+    if (playerGuess && !isCalculating) { // Ensure a guess has been made
+      setIsCalculating(true);
 
-      let score = calculateScore(dist);
-      if (hintRevealed && hintSource === 'penalty') {
-        score = Math.max(0, score - hintPenalty);
-      }
+      setTimeout(() => {
+        const dist = calculateDistance(
+          playerGuess.lat,
+          playerGuess.lng,
+          actualLocation.lat,
+          actualLocation.lng
+        );
+        setDistance(dist);
 
-      // Streak logic
-      let newStreak = currentStreak;
-      if (dist < 1000) {
-        newStreak += 1;
-        score += newStreak * 100;
-        // Bonus IP for streak
-        if (newStreak % 3 === 0) {
-             setIntelPoints(prev => prev + 1);
+        let score = calculateScore(dist);
+        if (hintRevealed && hintSource === 'penalty') {
+          score = Math.max(0, score - hintPenalty);
         }
-      } else {
-        newStreak = 0;
-      }
-      setCurrentStreak(newStreak);
 
-      setRoundScore(score);
-      setTotalScore(prevTotalScore => prevTotalScore + score);
-      setRoundScores(prevRoundScores => [...prevRoundScores, score]);
-      setGamePhase('round_summary');
+        // Streak logic
+        let newStreak = currentStreak;
+        if (dist < 1000) {
+          newStreak += 1;
+          score += newStreak * 100;
+          // Bonus IP for streak
+          if (newStreak % 3 === 0) {
+               setIntelPoints(prev => prev + 1);
+          }
+        } else {
+          newStreak = 0;
+        }
+        setCurrentStreak(newStreak);
+
+        setRoundScore(score);
+        setTotalScore(prevTotalScore => prevTotalScore + score);
+        setRoundScores(prevRoundScores => [...prevRoundScores, score]);
+        setGamePhase('round_summary');
+        setIsCalculating(false);
+      }, 1500);
     }
   };
 
@@ -273,6 +280,22 @@ function App() {
     }
   };
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (currentView === 'game') {
+        if (e.key === 'Enter' && gamePhase === 'guessing' && playerGuess && !isCalculating) {
+          handleMakeGuess();
+        } else if ((e.key === ' ' || e.key === 'Enter') && gamePhase === 'round_summary') {
+          handleNextRound();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentView, gamePhase, playerGuess, isCalculating, handleNextRound]); // handleMakeGuess included via closure but handleNextRound needs to be dependency or useCallback
+
   // Reset game state to play again
   const handlePlayAgain = () => {
     setGamePhase('start');
@@ -281,6 +304,7 @@ function App() {
 
   return (
     <div className="App">
+      <ScanlineOverlay />
       <header className="App-header">
         <div className="header-left">
           <h1>GEO-EXPLORER // SYSTEM ONLINE</h1>
@@ -320,7 +344,12 @@ function App() {
               <LoadingSpinner message="Traveling to next destination..." />
             </div>
           )}
-          {!isLoading && (gamePhase === 'guessing' || gamePhase === 'round_summary') && (
+          {isCalculating && (
+            <div className="loading-overlay">
+              <LoadingSpinner message="TRIANGULATING TARGET POSITION..." />
+            </div>
+          )}
+          {!isLoading && !isCalculating && (gamePhase === 'guessing' || gamePhase === 'round_summary') && (
             <>
               {gamePhase === 'guessing' && (
                 <TacticalHUD
@@ -385,6 +414,7 @@ function App() {
                     currentRound={currentRound}
                     totalRounds={locations.length}
                     funFact={actualLocation?.fun_fact}
+                    missionBrief={actualLocation?.mission_brief}
                     hintPenalty={hintRevealed ? hintPenalty : 0}
                     streakBonus={distance < 1000 ? (currentStreak * 100) : 0}
                   />

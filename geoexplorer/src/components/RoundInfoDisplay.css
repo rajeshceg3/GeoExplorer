@@ -54,6 +54,46 @@
   font-size: 0.9em;
 }
 
+.mission-brief-container {
+  background-color: #0a140a;
+  border: 1px solid var(--accent-color);
+  border-left: 4px solid #ffcc00; /* Yellow accent */
+  padding: 20px;
+  margin: 15px 0;
+  text-align: left;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mission-brief-container::before {
+  content: "MISSION_STATUS: COMPLETE";
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-family: var(--font-tactical);
+  font-size: 0.6em;
+  color: #ffcc00;
+  opacity: 0.5;
+}
+
+.mission-brief-container h4 {
+  margin: 0 0 10px 0;
+  color: #ffcc00;
+  font-family: var(--font-tactical);
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.mission-brief-container p {
+  margin: 0;
+  color: #e0e0e0;
+  font-family: var(--font-tactical);
+  line-height: 1.5;
+  font-size: 0.9em;
+}
+
 .typewriter-text {
   overflow: hidden; /* Ensures the content is not revealed until the animation */
   white-space: pre-wrap; /* Keeps the formatting */
