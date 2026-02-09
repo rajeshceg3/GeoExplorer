@@ -1,11 +1,18 @@
 import React from 'react';
 import './RoundInfoDisplay.css';
 
-const RoundInfoDisplay = ({ distance, roundScore, totalScore, locationName, currentRound, totalRounds, funFact, hintPenalty, streakBonus }) => {
+const RoundInfoDisplay = ({ distance, roundScore, totalScore, locationName, currentRound, totalRounds, funFact, missionBrief, hintPenalty, streakBonus }) => {
   return (
     <div className="round-info">
       {locationName && (
         <h3 className="location-reveal">TARGET IDENTIFIED: {locationName}</h3>
+      )}
+
+      {missionBrief && (
+        <div className="mission-brief-container">
+          <h4>MISSION DEBRIEF:</h4>
+          <p className="typewriter-text">{missionBrief}</p>
+        </div>
       )}
 
       {funFact && (
