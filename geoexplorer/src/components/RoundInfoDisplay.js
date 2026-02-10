@@ -1,5 +1,6 @@
 import React from 'react';
 import './RoundInfoDisplay.css';
+import TypewriterText from './TypewriterText';
 
 const RoundInfoDisplay = ({ distance, roundScore, totalScore, locationName, currentRound, totalRounds, funFact, missionBrief, hintPenalty, streakBonus }) => {
   return (
@@ -11,14 +12,18 @@ const RoundInfoDisplay = ({ distance, roundScore, totalScore, locationName, curr
       {missionBrief && (
         <div className="mission-brief-container">
           <h4>MISSION DEBRIEF:</h4>
-          <p className="typewriter-text">{missionBrief}</p>
+          <div className="typewriter-wrapper" style={{ minHeight: '60px' }}>
+            <TypewriterText text={missionBrief} speed={15} />
+          </div>
         </div>
       )}
 
       {funFact && (
         <div className="fun-fact-container">
           <h4>INTEL ACQUIRED:</h4>
-          <p className="typewriter-text">{funFact}</p>
+          <div className="typewriter-wrapper" style={{ minHeight: '60px' }}>
+            <TypewriterText text={funFact} speed={20} />
+          </div>
         </div>
       )}
 

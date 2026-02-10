@@ -50,6 +50,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
 
+  // Game Mode State
+  const [gameMode, setGameMode] = useState('standard'); // 'standard' or 'blitz'
+  const [timeLeft, setTimeLeft] = useState(60);
+
   // Intel Ops State
   const [intelPoints, setIntelPoints] = useState(3);
   const [activeIntel, setActiveIntel] = useState({ uplink: null });
@@ -80,8 +84,9 @@ function App() {
     return shuffled.slice(0, count);
   };
 
-  const handleStartGame = (difficulty) => {
+  const handleStartGame = (difficulty, mode = 'standard') => {
     setGameDifficulty(difficulty);
+    setGameMode(mode);
     const selectedLocations = selectRandomLocations(5, difficulty);
     setLocations(selectedLocations);
     setGamePhase('guessing');
@@ -97,9 +102,13 @@ function App() {
     setActiveIntel({ uplink: null });
     setIntelPoints(3); // Reset IP for new game
     setCurrentStreak(0);
+    if (mode === 'blitz') {
+      setTimeLeft(60);
+    }
   };
 
   const handleDailyChallenge = () => {
+    setGameMode('standard'); // Daily is always standard for now
     const today = new Date().toDateString();
     const rng = new SeededRandom(today);
 
@@ -172,6 +181,28 @@ function App() {
       setActualLocation(locations[currentRound - 1]);
     }
   }, [currentRound, locations]);
+
+  // Blitz Mode Timer
+  useEffect(() => {
+    let timer;
+    if (gameMode === 'blitz' && gamePhase === 'guessing' && timeLeft > 0 && !isCalculating) {
+      timer = setInterval(() => {
+        setTimeLeft(prev => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && gameMode === 'blitz' && gamePhase === 'guessing' && !isCalculating) {
+      // Time Expired Logic
+      setIsCalculating(true);
+      setTimeout(() => {
+        setDistance(20000); // Max penalty distance
+        setRoundScore(0);
+        setCurrentStreak(0);
+        setRoundScores(prev => [...prev, 0]);
+        setGamePhase('round_summary');
+        setIsCalculating(false);
+      }, 1500);
+    }
+    return () => clearInterval(timer);
+  }, [gameMode, gamePhase, timeLeft, isCalculating]);
 
   // Define handleMapClick function
   const handleMapClick = (coordinates) => {
@@ -267,6 +298,9 @@ function App() {
         setHintSource('none');
         setActiveIntel({ uplink: null });
         setGamePhase('guessing');
+        if (gameMode === 'blitz') {
+          setTimeLeft(60);
+        }
         setIsLoading(false);
       }, 1500);
       // actualLocation will be updated by the useEffect hook watching currentRound
@@ -358,6 +392,8 @@ function App() {
                   onActivateReport={handleActivateReport}
                   isUplinkActive={!!activeIntel.uplink}
                   isReportActive={hintRevealed}
+                  gameMode={gameMode}
+                  timeLeft={timeLeft}
                 />
               )}
               <div className="container">
@@ -417,6 +453,7 @@ function App() {
                     missionBrief={actualLocation?.mission_brief}
                     hintPenalty={hintRevealed ? hintPenalty : 0}
                     streakBonus={distance < 1000 ? (currentStreak * 100) : 0}
+                    timeExpired={gameMode === 'blitz' && timeLeft === 0}
                   />
                   <button onClick={handleNextRound} className="primary-action-button">
                     {currentRound < locations.length ? 'Next Round' : 'Show Final Score'}

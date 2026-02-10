@@ -46,7 +46,7 @@
   letter-spacing: 1px;
 }
 
-.fun-fact-container p {
+.fun-fact-container .typewriter-wrapper, .fun-fact-container p {
   margin: 0;
   color: #aaddaa;
   font-family: var(--font-tactical);
@@ -86,7 +86,7 @@
   letter-spacing: 1px;
 }
 
-.mission-brief-container p {
+.mission-brief-container .typewriter-wrapper, .mission-brief-container p {
   margin: 0;
   color: #e0e0e0;
   font-family: var(--font-tactical);

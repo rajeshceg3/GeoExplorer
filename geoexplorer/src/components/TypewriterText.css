@@ -1,0 +1,18 @@
+.typewriter-text-container {
+  font-family: 'Courier New', Courier, monospace;
+  white-space: pre-wrap;
+}
+
+.cursor {
+  display: inline-block;
+  color: #34c759; /* Fallback if var not defined */
+  color: var(--color-tactical-green, #34c759);
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
