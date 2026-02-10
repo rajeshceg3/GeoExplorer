@@ -34,6 +34,50 @@
   animation: blink 2s infinite;
 }
 
+.hud-timer {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid var(--color-tactical-green);
+  padding: 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.hud-timer.warning {
+  border-color: #ff3b30;
+  box-shadow: inset 0 0 10px rgba(255, 59, 48, 0.2);
+  animation: pulse-border 1s infinite;
+}
+
+.hud-timer.warning .timer-value {
+  color: #ff3b30;
+  text-shadow: 0 0 10px rgba(255, 59, 48, 0.8);
+}
+
+.timer-label {
+  display: block;
+  font-size: 0.7em;
+  color: var(--color-tactical-green);
+  opacity: 0.8;
+  margin-bottom: 2px;
+  letter-spacing: 1px;
+}
+
+.timer-value {
+  font-size: 1.8em;
+  font-weight: bold;
+  font-family: monospace;
+  color: #fff;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  display: block;
+  line-height: 1;
+}
+
+@keyframes pulse-border {
+  0% { border-color: #ff3b30; }
+  50% { border-color: transparent; }
+  100% { border-color: #ff3b30; }
+}
+
 .hud-intel-points {
   padding: 15px;
   text-align: center;

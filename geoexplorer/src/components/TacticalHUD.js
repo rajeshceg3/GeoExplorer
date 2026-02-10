@@ -6,7 +6,9 @@ const TacticalHUD = ({
   onActivateUplink,
   onActivateReport,
   isUplinkActive,
-  isReportActive
+  isReportActive,
+  gameMode,
+  timeLeft
 }) => {
   return (
     <div className="tactical-hud">
@@ -14,6 +16,13 @@ const TacticalHUD = ({
         <span className="hud-title">G.I.M. - GEO INTEL MODULE</span>
         <span className="hud-status">ONLINE</span>
       </div>
+
+      {gameMode === 'blitz' && (
+        <div className={`hud-timer ${timeLeft <= 10 ? 'warning' : ''}`}>
+          <span className="timer-label">TIME REMAINING</span>
+          <span className="timer-value">00:{timeLeft < 10 ? `0${timeLeft}` : timeLeft}</span>
+        </div>
+      )}
 
       <div className="hud-intel-points">
         <span className="ip-label">INTEL POINTS</span>
