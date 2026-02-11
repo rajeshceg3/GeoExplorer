@@ -13,6 +13,7 @@ import UserProfile from './components/UserProfile'; // Import UserProfile
 import GameStartScreen from './components/GameStartScreen';
 import TacticalHUD from './components/TacticalHUD';
 import ScanlineOverlay from './components/ScanlineOverlay';
+import DecryptedText from './components/DecryptedText';
 import gameLocationsData from './locations.json';
 
 // Define hardcoded locations
@@ -58,6 +59,11 @@ function App() {
   const [intelPoints, setIntelPoints] = useState(3);
   const [activeIntel, setActiveIntel] = useState({ uplink: null });
   const [hintSource, setHintSource] = useState('none'); // 'none', 'penalty', 'intel'
+  const [missionLog, setMissionLog] = useState([]);
+
+  const addLog = (message) => {
+    setMissionLog(prev => [...prev.slice(-19), message]);
+  };
 
   // State for user's lifetime statistics (session-based)
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -102,6 +108,7 @@ function App() {
     setActiveIntel({ uplink: null });
     setIntelPoints(3); // Reset IP for new game
     setCurrentStreak(0);
+    setMissionLog(["MISSION START. TARGETS IDENTIFIED."]);
     if (mode === 'blitz') {
       setTimeLeft(60);
     }
@@ -130,6 +137,7 @@ function App() {
     setActiveIntel({ uplink: null });
     setIntelPoints(3);
     setCurrentStreak(0);
+    setMissionLog(["DAILY OPERATION INITIALIZED.", "TARGET ACQUIRED."]);
   };
 
   // Google Sign-In initialization and user state handling
@@ -214,11 +222,13 @@ function App() {
   const handleRevealHint = () => {
     setHintRevealed(true);
     setHintSource('penalty');
+    addLog("EMERGENCY PROTOCOLS ACTIVE. HINT REVEALED.");
   };
 
   const handleActivateUplink = () => {
     if (intelPoints >= 2 && actualLocation) {
       setIntelPoints(prev => prev - 2);
+      addLog("SATELLITE UPLINK ESTABLISHED. SECTOR HIGHLIGHTED.");
       // Generate a random center such that actualLocation is within 3000km radius
       // We use getRandomPointInRadius(actualLocation, 2000) to get a center.
       // If we draw a 3000km circle around that center, actualLocation is guaranteed to be inside
@@ -239,6 +249,7 @@ function App() {
       setIntelPoints(prev => prev - 1);
       setHintRevealed(true);
       setHintSource('intel');
+      addLog("INTEL DECRYPTED. ANALYZING LOCAL DATA...");
     }
   };
 
@@ -246,6 +257,7 @@ function App() {
   const handleMakeGuess = () => {
     if (playerGuess && !isCalculating) { // Ensure a guess has been made
       setIsCalculating(true);
+      addLog("COORDINATES LOCKED. INITIATING STRIKE...");
 
       setTimeout(() => {
         const dist = calculateDistance(
@@ -298,6 +310,7 @@ function App() {
         setHintSource('none');
         setActiveIntel({ uplink: null });
         setGamePhase('guessing');
+        addLog(`TARGET #${nextRoundNumber} IDENTIFIED. AWAITING INPUT.`);
         if (gameMode === 'blitz') {
           setTimeLeft(60);
         }
@@ -394,6 +407,7 @@ function App() {
                   isReportActive={hintRevealed}
                   gameMode={gameMode}
                   timeLeft={timeLeft}
+                  missionLog={missionLog}
                 />
               )}
               <div className="container">
@@ -437,7 +451,7 @@ function App() {
               )}
               {gamePhase === 'guessing' && hintRevealed && (
                 <div className="hint-display fade-in-section">
-                  <p><strong>Hint:</strong> {actualLocation?.hint}</p>
+                  <p><strong>Hint:</strong> <DecryptedText text={actualLocation?.hint} speed={30} /></p>
                 </div>
               )}
               {gamePhase === 'round_summary' && (

@@ -1,0 +1,8 @@
+.decrypted-text {
+  font-family: 'Courier New', monospace;
+  color: #34c759;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px rgba(52, 199, 89, 0.5);
+  white-space: pre-wrap;
+}
