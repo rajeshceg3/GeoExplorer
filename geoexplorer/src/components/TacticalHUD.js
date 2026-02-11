@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './TacticalHUD.css';
+import TypewriterText from './TypewriterText';
 
 const TacticalHUD = ({
   intelPoints,
@@ -8,8 +9,17 @@ const TacticalHUD = ({
   isUplinkActive,
   isReportActive,
   gameMode,
-  timeLeft
+  timeLeft,
+  missionLog = []
 }) => {
+  const logEndRef = useRef(null);
+
+  useEffect(() => {
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [missionLog]);
+
   return (
     <div className="tactical-hud">
       <div className="hud-header">
@@ -57,6 +67,19 @@ const TacticalHUD = ({
           </div>
           {isReportActive && <span className="active-indicator">REVEALED</span>}
         </button>
+      </div>
+
+      <div className="hud-log">
+        <div className="log-title">MISSION LOG</div>
+        <div className="log-entries">
+          {missionLog.map((msg, idx) => (
+            <div key={idx} className="log-entry">
+              <span className="log-prefix">{'>'}</span>
+              <TypewriterText text={msg} speed={10} />
+            </div>
+          ))}
+          <div ref={logEndRef} />
+        </div>
       </div>
 
       <div className="hud-footer">

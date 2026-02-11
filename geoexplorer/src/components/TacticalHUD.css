@@ -12,6 +12,8 @@
   box-shadow: 0 0 15px rgba(52, 199, 89, 0.3);
   overflow: hidden;
   backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
 }
 
 .hud-header {
@@ -21,6 +23,7 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #34c759;
+  flex-shrink: 0;
 }
 
 .hud-title {
@@ -40,6 +43,7 @@
   padding: 10px;
   text-align: center;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .hud-timer.warning {
@@ -82,6 +86,7 @@
   padding: 15px;
   text-align: center;
   border-bottom: 1px solid rgba(52, 199, 89, 0.3);
+  flex-shrink: 0;
 }
 
 .ip-label {
@@ -102,6 +107,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .hud-button {
@@ -167,12 +173,65 @@
   font-weight: bold;
 }
 
+.hud-log {
+  border-top: 1px solid rgba(52, 199, 89, 0.3);
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100px;
+  max-height: 150px;
+}
+
+.log-title {
+  font-size: 0.7rem;
+  color: rgba(52, 199, 89, 0.7);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(52, 199, 89, 0.2);
+}
+
+.log-entries {
+  overflow-y: auto;
+  flex-grow: 1;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #34c759 transparent;
+}
+
+.log-entries::-webkit-scrollbar {
+  width: 4px;
+}
+
+.log-entries::-webkit-scrollbar-thumb {
+  background-color: #34c759;
+}
+
+.log-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  line-height: 1.2;
+}
+
+.log-prefix {
+  color: #34c759;
+  opacity: 0.7;
+}
+
 .hud-footer {
   font-size: 0.7rem;
   padding: 5px 10px;
   text-align: right;
   opacity: 0.6;
   background-color: rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+  border-top: 1px solid rgba(52, 199, 89, 0.3);
 }
 
 @keyframes blink {
@@ -182,14 +241,15 @@
 
 @media (max-width: 768px) {
   .tactical-hud {
+    position: relative;
     top: auto;
-    bottom: 20px;
-    right: 10px;
-    left: 10px;
-    width: auto;
+    right: auto;
+    width: 100%;
+    margin-bottom: 20px;
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: stretch;
+    flex-direction: row;
   }
 
   .hud-header, .hud-footer {
@@ -203,6 +263,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 20%;
   }
 
   .ip-value {
@@ -213,9 +274,18 @@
     flex: 1;
     flex-direction: row;
     padding: 10px;
+    width: 40%;
   }
 
   .hud-button {
     flex: 1;
+  }
+
+  .hud-log {
+     width: 100%;
+     max-height: 100px;
+     min-height: 80px;
+     order: 3;
+     border-top: 1px solid rgba(52, 199, 89, 0.3);
   }
 }
